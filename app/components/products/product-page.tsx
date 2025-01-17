@@ -131,10 +131,9 @@ export default function ({
                     >
                         Add to Cart
                     </Button>
-                    <ButtonRouter path="/admin/products" title="manage Products" />
                 </div>
             </div>
-            <div className="flex gap-16">
+            <div className="flex gap-16 mt-8">
                 <div>
                     <div className="flex space-x-4">
                         <div className="flex flex-col space-y-4">
@@ -147,7 +146,7 @@ export default function ({
                         <img src={selectedImage} alt={`Product Image`} className="max-w-[500px] object-cover rounded-md" />
                     </div>
                 </div>
-                <div className="w-3/4">
+                <div className="border-l-1 pl-4 w-3/4">
                     <div className="p-2">
                         <h3 className="text-xl font-bold">{product.name}</h3>
                     </div>
