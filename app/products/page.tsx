@@ -35,7 +35,11 @@ export default async function Page() {
                     )}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         {parentProducts.map((product) => (
-                            <Card isFooterBlurred className="flex flex-col items-center">
+                            <Card 
+                                key={product.id}
+                                isFooterBlurred 
+                                className="flex flex-col items-center"
+                            >
                                 <CardHeader className="p-4 flex-row items-center justify-between">
                                     <h4 className="text-black font-bold text-2xl truncate-text-single-line pr-4">{product.name}</h4>
                                     <p className="text-tiny text-black uppercase font-bold">{formatUnitAmountRange(product.prices)}</p>
