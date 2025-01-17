@@ -6,7 +6,8 @@ import { getProductPrices } from '../price-management/route';
 // Create a Product and Price
 export async function createProduct(productParams: ProductParams) {
     try {
-        delete (productParams as any).shipping_requirements;        // Create the product using Stripe's API
+        delete (productParams as any).shipping_requirements;  
+        delete (productParams as any).tax_code;        // Create the product using Stripe's API
         const product = await stripe.products.create({
             ...productParams,
             description: productParams.description ?? undefined,
