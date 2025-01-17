@@ -1,0 +1,174 @@
+[tests]
+framework = "Vitest"
+num_desired_tests = 6
+use_mocks = false
+language = "typescript"
+
+customTestInstructions = """
+- Write tests using TypeScript best practices with TypeScript 5.3.3
+- Include proper type annotations for all variables and functions
+- Handle NextUI v2.4.8 components and TailwindCSS v3.4.16 classes appropriately
+- Consider Stripe integration testing needs (@stripe/react-stripe-js v3.0.0)
+- Mock iron-session (v8.0.4) for authentication testing when needed
+- Follow React 18.2.0 and Next.js latest testing best practices
+- Ensure server-only components are properly mocked
+"""
+
+[tests.typescript]
+overrideTestRunScript = "npx vitest run TEST_FILEPATH"
+overrideImports = """
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import type { Mock } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import '@testing-library/jest-dom/vitest'
+import { NextUIProvider } from '@nextui-org/react'
+import { Elements } from '@stripe/react-stripe-js'
+
+# Mock Next.js features
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
+  usePathname: vi.fn(),
+}))
+
+vi.mock('server-only', () => ({}))
+vi.mock('iron-session', () => ({
+  getIronSession: vi.fn(),
+}))
+"""
+
+fileExtension = ".test.tsx"
+strictTypeChecking = true
+
+# Add setup for component testing with all providers
+testSetup = """
+beforeAll(() => {
+  const Wrapper = ({ children }) => (
+    <NextUIProvider>
+      {/* Add Stripe provider if needed */}
+      {children}
+    </NextUIProvider>
+  )
+  
+  const customRender = (ui, options = {}) =>
+    render(ui, { wrapper: Wrapper, ...options })
+
+  vi.stubGlobal('render', customRender)
+})
+
+// Setup userEvent
+beforeEach(() => {
+  vi.clearAllMocks()
+})
+"""
+
+# Environment setup for testing
+envSetup = """
+process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = 'test_key'
+process.env.STRIPE_SECRET_KEY = 'test_secret_key'
+process.env.IRON_SESSION_PASSWORD = 'test_password'
+"""
+
+[suggestions]
+language = "typescript"
+framework = "nextjs"
+
+customSuggestionInstructions = """
+# Code Style & Best Practices
+- Follow Next.js 13+ App Router patterns and conventions
+- Use TypeScript strict mode patterns and type safety
+- Implement React Server Components (RSC) patterns where applicable
+- Follow React 18 best practices including hooks and concurrent features
+
+# UI/Styling
+- Prefer NextUI v2.4.8 component patterns and hooks
+- Use TailwindCSS v3.4.16 utility classes with proper organization
+- Follow responsive design patterns using Tailwind breakpoints
+- Maintain consistent dark/light theme support with NextUI
+
+# Authentication & API
+- Implement iron-session best practices for auth management
+- Follow Stripe best practices for payment integration
+- Use proper error handling for API routes
+- Implement proper type safety for API responses
+
+# Performance & Security
+- Implement proper loading and error states
+- Use proper data fetching patterns (Server Components)
+- Follow security best practices for payment handling
+- Implement proper form validation patterns
+
+# Component Structure
+- Maintain clear component boundaries
+- Use proper prop typing with TypeScript
+- Implement proper state management patterns
+- Follow NextUI composition patterns
+"""
+
+[suggestions.patterns]
+# NextUI component patterns
+nextui = """
+- Use semantic NextUI components
+- Implement proper NextUI theme configuration
+- Use NextUI's built-in hooks for state management
+- Follow NextUI's responsive design patterns
+"""
+
+# Stripe integration patterns
+stripe = """
+- Implement proper error handling for Stripe operations
+- Use Stripe Elements components correctly
+- Follow Stripe security best practices
+- Implement proper loading states for payments
+"""
+
+# Authentication patterns
+auth = """
+- Implement proper session management with iron-session
+- Use proper type safety for session data
+- Follow secure cookie handling practices
+- Implement proper authentication flow
+"""
+
+# API patterns
+api = """
+- Use proper error handling
+- Implement proper type safety
+- Follow RESTful conventions
+- Use proper status codes
+"""
+
+[suggestions.typescript]
+strictNullChecks = true
+noImplicitAny = true
+strictFunctionTypes = true
+strictBindCallApply = true
+
+[suggestions.nextjs]
+serverComponents = true
+clientComponents = true
+metadata = true
+routing = true
+
+[dependencies]
+# Main Dependencies
+"@nextui-org/react" = "^2.4.8"
+"@stripe/react-stripe-js" = "^3.0.0"
+"@stripe/stripe-js" = "^5.2.0"
+"iron-session" = "^8.0.4"
+"next" = "latest"
+"react" = "^18.2.0"
+"react-dom" = "^18.2.0"
+"server-only" = "^0.0.1"
+"stripe" = "^17.4.0"
+"tailwindcss" = "^3.4.16"
+
+# Dev Dependencies
+"@testing-library/jest-dom" = "^6.1.4"
+"@testing-library/react" = "^14.1.2"
+"@testing-library/user-event" = "^14.5.2"
+"@vitejs/plugin-react" = "^4.3.4"
+"jsdom" = "^23.0.1"
+"typescript" = "5.3.3"
+"vitest" = "^1.0.4"
