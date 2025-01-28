@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
             const matchingRates = shippingRates.filter(rate => {
                 const minWeight = parseFloat(rate.metadata.minWeight);
                 const maxWeight = parseFloat(rate.metadata.maxWeight);
-                return weight >= minWeight && weight <= maxWeight;
+                return weight >= minWeight && (weight <= maxWeight || maxWeight === -1);
             });
             shippingRates = [...matchingRates];
         }

@@ -15,6 +15,7 @@ const CartManager = () => {
     const [Subtotal, setSubtotal] = useState<number>(0);
     const [shipping, setShipping] = useState<number>(0);
     const [shippingRateId, setShippingRateId] = useState<string>('');
+    const [shippingSet, setShippingSet] = useState<boolean>(false);
 
     useEffect(() => {
         setCanCheckout(cart.find((item: any) => item.available === false) ? false : true);
@@ -41,8 +42,15 @@ const CartManager = () => {
         const data = await response.json();
         const shippingRatesData = await fetch(`/api/stripe/shipping-management?weight=${data.totalWeight}`);
         const shippingRates = await shippingRatesData.json();
+        if (!shippingRates.shippingRates || shippingRates.shippingRates.length === 0) {
+            setShipping(0);
+            setShippingRateId('');
+            setShippingSet(true);
+            return;
+        }
         setShipping(shippingRates.shippingRates[0].fixed_amount.amount);
         setShippingRateId(shippingRates.shippingRates[0].id);
+        setShippingSet(true);
     }
 
 
@@ -104,7 +112,7 @@ const CartManager = () => {
                         <span className="ml-auto font-bold">
                             {Subtotal ? `$${(Subtotal / 100).toFixed(2)}` : 'Calculating...'}
                         </span></li>
-                    <li className="flex flex-wrap gap-4 text-base">Shipping <span className="ml-auto font-bold">{shipping ? `$${(shipping / 100).toFixed(2)}` : 'Calculating...'}</span></li>
+                    <li className="flex flex-wrap gap-4 text-base">Shipping <span className="ml-auto font-bold">{shippingSet ? `$${(shipping / 100).toFixed(2)}` : 'Calculating...'}</span></li>
                     <li className="flex flex-wrap gap-4 text-base">Tax <span className="ml-auto font-bold">Calculated at Checkout</span></li>
                     <li className="flex flex-wrap gap-4 text-base font-bold">Total <span className="ml-auto">Calculated at Checkout</span></li>
                 </ul>

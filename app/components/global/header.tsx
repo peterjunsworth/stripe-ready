@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import CartIcon from '../icons/icon-cart';
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Image } from "@nextui-org/react";
 import {
     Dropdown,
     DropdownTrigger,
@@ -30,7 +30,13 @@ export default function Header() {
         >
             <NavbarBrand>
                 <Link color="foreground" href="/">
-                    <Logo />
+                    <Image 
+                        src={`${process.env.NEXT_PUBLIC_BASE_URL}/images/stripe-ready.png`}
+                        className='mr-2'
+                        width={40}
+                        removeWrapper={true}
+                        alt="logo"
+                    />
                     <p className="font-bold text-inherit">{businessName}</p>
                 </Link>
             </NavbarBrand>

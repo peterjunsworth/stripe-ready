@@ -9,6 +9,13 @@ export async function POST(req: NextRequest) {
             price: item.id, // Use the price ID from the cart item
             quantity: item.quantity, // Use the quantity from the cart item
         }));
+        const shippingData = shippingRateId.length ? {
+            shipping_options: [
+                {
+                    shipping_rate: shippingRateId
+                }
+            ]
+        } : {};
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items,
@@ -16,11 +23,7 @@ export async function POST(req: NextRequest) {
             success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/confirmation`, // Redirect URL after successful payment
             cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cart`, // Redirect URL if payment is canceled
             automatic_tax: { enabled: true },
-            shipping_options: [
-                {
-                    shipping_rate: shippingRateId
-                }
-            ]
+            ...shippingData
         });
         return NextResponse.json({ success: true, session });
     } catch (error: any) {

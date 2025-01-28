@@ -40,7 +40,7 @@ export default function ShippingForm({
         const shippingRate: ShippingRate = {
             display_name: displayName,
             fixed_amount: { amount, currency: 'usd' },
-            metadata: { minWeight, maxWeight },
+            metadata: { minWeight, maxWeight: maxWeight || '-1' },
         };
 
         try {
@@ -90,7 +90,7 @@ export default function ShippingForm({
     const handleEditRate = (rate: ShippingRate) => {
         setAmount(rate.fixed_amount.amount ?? 0);
         setMinWeight(rate.metadata.minWeight);
-        setMaxWeight(rate.metadata.maxWeight);
+        setMaxWeight(rate.metadata.maxWeight === '-1' ? '' : rate.metadata.maxWeight);
         setCurrentRateId(String(rate.id) ?? null);
     };
 
@@ -140,10 +140,9 @@ export default function ShippingForm({
                 />
                 <Input
                     isClearable
-                    label="Maximum Weight (oz)"
+                    label="Maximum Weight (oz), Infinite if empty"
                     value={maxWeight}
                     onChange={(e) => setMaxWeight(e.target.value)}
-                    required
                 />
                 <Button
                     type="submit"
@@ -171,8 +170,8 @@ export default function ShippingForm({
                         <TableRow key={rate.id}>
                             <TableCell>{rate.display_name}</TableCell>
                             <TableCell>${((rate.fixed_amount.amount ?? 0) / 100).toFixed(2)}</TableCell>
-                            <TableCell>{rate.metadata.minWeight}oz</TableCell>
-                            <TableCell>{rate.metadata.maxWeight}oz</TableCell>
+                            <TableCell>{rate.metadata.minWeight} oz</TableCell>
+                            <TableCell>{rate.metadata.maxWeight === '-1' ? 'Infinite' : `${rate.metadata.maxWeight} oz`}</TableCell>
                             <TableCell>
                                 <Button
                                     onClick={() => handleEditRate(rate)}
