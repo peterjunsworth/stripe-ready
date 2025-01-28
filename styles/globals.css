@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    Fira Sans,
+    Droid Sans,
+    Helvetica Neue,
+    sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.icon-trash {
+  cursor: pointer;
+}
+.icon-trash:hover path {
+  stroke: red;
+}
+
+.truncate-text-single-line {
+  white-space: nowrap;
+  /* Prevents text from wrapping to a new line */
+  overflow: hidden;
+  /* Ensures the text is clipped */
+  text-overflow: ellipsis;
+  /* Adds ellipsis when text is truncated */
+}
+
+.truncate-text-two-lines {
+  display: -webkit-box;
+  /* Required for multi-line truncation */
+  -webkit-line-clamp: 2;
+  /* Limits the text to 2 lines */
+  -webkit-box-orient: vertical;
+  /* Sets the box to be vertical */
+  overflow: hidden;
+}
+
+.truncate-text-three-lines {
+  display: -webkit-box;
+  /* Required for multi-line truncation */
+  -webkit-line-clamp: 3;
+  /* Limits the text to 3 lines */
+  -webkit-box-orient: vertical;
+  /* Sets the box to be vertical */
+  overflow: hidden;
+}
