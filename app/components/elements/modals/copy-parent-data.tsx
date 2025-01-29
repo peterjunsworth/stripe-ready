@@ -27,7 +27,6 @@ export default function CopyParentData({
             const data = await response.json();
             const prices = data?.prices?.data.map((price: any) => intersectObjects(price, defaultPriceData))
             setUpdatedProductPrices(prices);
-            
         } catch (error: any) {
             console.error('Error:', error.message);
         }

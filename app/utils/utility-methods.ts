@@ -15,7 +15,7 @@ export const cleanData = (productDataValues: any, defaultProductData: any) => {
 // This method makes sure we only try and persist values specified in the defaultProductData
 export function intersectObjects(obj1: any, obj2: any): any {
   return Object.entries(obj1).reduce((result: Record<string, any>, [key, value]) => {
-    if (key === 'metadata') return result; // Skip 'metadata'
+    if (key === 'metadata' || key === 'id') return result; // Skip 'metadata'
     if (obj2.hasOwnProperty(key)) {
       if (
         typeof value === 'object' &&

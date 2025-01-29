@@ -73,13 +73,13 @@ export async function GET(req: NextRequest) {
         // Use the Stripe products search method
         const stripeProducts = await stripe.products.search({
             query: searchQuery,
-            limit: 10,  // Adjust the number of results as needed
+            limit: 100,  // Adjust the number of results as needed
         });
         console.log(stripeProducts);
 
         // Map the Stripe product data to a simpler format
         const products = stripeProducts.data
-            .filter((product) => product.active)
+            .filter((product) => product.active && !product.metadata?.parentProduct)
             .map((product) => ({
                 id: product.id,
                 name: product.name,

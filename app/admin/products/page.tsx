@@ -25,7 +25,7 @@ export default async function Page() {
         <h1 className="text-2xl font-bold mb-4">Stripe Products</h1>
         <ButtonRouter
           path="/admin/products/add"
-          title="Add Product"
+          title="Create Product"
         />
       </div>
       <Suspense fallback={<CircularProgress aria-label="Loading..." />}>

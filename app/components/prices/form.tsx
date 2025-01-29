@@ -345,7 +345,7 @@ export default function PriceForm({
                                     Create Price
                                 </Button>
                             )}
-                            {price.product && typeof price.product === 'object' && (price.product as any)?.default_price !== price.id && (
+                            {price.id && price.product && typeof price.product === 'object' && (price.product as any)?.default_price !== price.id && (
                                 <Button
                                     type="submit"
                                     className="w-full mt-4"

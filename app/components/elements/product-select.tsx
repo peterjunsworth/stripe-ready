@@ -54,7 +54,7 @@ export default function ProductAutocomplete({
             <Autocomplete
                 aria-label="Search products"
                 value={query}
-                placeholder="Search Parent Product"
+                placeholder="Search Parent Product (enter min 3 characters)"
                 onInputChange={(value) => {
                     if (value.length >= 3) handleInputChange(value);
                 }}
