@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { CartParams, PriceParams, ProductParams } from "@/types/interfaces";
 import ButtonRouter from "@/app/components/elements/button-route";
-import ChevronDownIcon from "@/app/components/icons/icon-chevron-down";
 import { Button, Divider,Image, Select, SelectItem } from "@nextui-org/react";
-import { parse } from "path";
 import CartItem from "@/app/components/checkout/cart-item";
+import { Suspense } from "react";
+import { CartSkeleton } from "@/app/components/elements/skeleton-cart-loader";
 
 const CartManager = () => {
 
@@ -16,6 +16,7 @@ const CartManager = () => {
     const [shipping, setShipping] = useState<number>(0);
     const [shippingRateId, setShippingRateId] = useState<string>('');
     const [shippingSet, setShippingSet] = useState<boolean>(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setCanCheckout(cart.find((item: any) => item.available === false) ? false : true);
@@ -31,6 +32,7 @@ const CartManager = () => {
         const storedValue = localStorage.getItem('stripe-ready-cart') || '[]';
         const parsedCart = JSON.parse(storedValue).map((item: PriceParams) => ({ ...item, quantity: item.quantity || 1 }));
         setCart(parsedCart);
+        setLoading(false);
     }, []);
 
     const getCombinedProductWeight = async() => {
@@ -81,23 +83,25 @@ const CartManager = () => {
             <div className="md:col-span-2 bg-gray-100 p-4 rounded-md">
                 <h2 className="text-2xl font-bold text-gray-800">Cart</h2>
                 <Divider className="my-4" />
-                {cart.length === 0 ?
+                {loading ? (
+                    <CartSkeleton />
+                ) : cart.length === 0 ? (
                     <div className="text-center text-gray-800">
                         <p className="text-lg font-bold mb-2">Your cart is empty</p>
                         <p className="text-sm">Start shopping to add items to your cart.</p>
                     </div>
-                :
+                ) : (
                     <div className="space-y-4">
-                        {cart.map((item: CartParams, index: number) => (
-                            <CartItem
-                                key={item.id}
-                                price={item}
-                                cart={cart}
-                                setCart={setCart}
+                        {cart.map((item, index) => (
+                            <CartItem 
+                                key={item.id} 
+                                price={item} 
+                                cart={cart} 
+                                setCart={setCart} 
                             />
                         ))}
                     </div>
-                }
+                )}
             </div>
 
             <div className="bg-gray-100 rounded-md p-4 md:sticky top-0">

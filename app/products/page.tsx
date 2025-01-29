@@ -3,9 +3,9 @@ export async function generateMetadata() {
 }
 
 import { Suspense } from "react";
-import { CircularProgress } from "@nextui-org/react";
+import { SkeletonLoader } from "@/app/components/elements/skeleton-grid-loader";
 import { listProducts } from "@/app/api/stripe/product-management/route";
-import { Button, Card, CardBody, CardHeader, CardFooter, Image, Link } from "@nextui-org/react";
+import { Card, CardBody, CardHeader, CardFooter, Image } from "@nextui-org/react";
 import { formatUnitAmountRange } from "@/app/utils/utility-methods";
 import ButtonRouter from "@/app/components/elements/button-route";
 
@@ -23,10 +23,9 @@ export default async function Page() {
             active: product?.active,
     }));
 
-
     return (
         <div className="p-4">
-            <Suspense fallback={<CircularProgress aria-label="Loading..." />}>
+            <Suspense fallback={<SkeletonLoader />}>
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     {parentProducts.length === 0 && (
                         <div className="flex flex-col items-center text-center">

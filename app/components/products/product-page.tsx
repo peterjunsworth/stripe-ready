@@ -3,8 +3,7 @@
 import React, { use, useEffect, useState } from "react";
 import { ProductParams, PriceParams } from "@/types/interfaces";
 import { Button, Select, SelectItem } from "@nextui-org/react";
-import ButtonRouter from "@/app/components/elements/button-route";
-import { e } from "vitest/dist/reporters-OH1c16Kq.js";
+import { ProductImageSkeleton } from "@/app/components/elements/skeleton-product-image";
 
 export default function ({ 
     product, 
@@ -16,14 +15,17 @@ export default function ({
     cheapestNonRecurring: PriceParams
 }) {
 
-    console.log(productVariants);
-
     const [selectedImage, setSelectedImage] = useState(product.images[0]);
     const [variantFeatures, setVariantFeatures] = useState<ProductParams[]>(product.metadata.variant_features ? JSON.parse(product.metadata.variant_features) : []);
     const [variantOptions, setVariantOptions] = useState<{ [key: string]: any[] }>({});
     const [selectedVariant, setSelectedVariant] = useState({});
     const [canAddToCart, setCanAddToCart] = useState<boolean>(!productVariants.length && Boolean(product?.default_price?.id || cheapestNonRecurring?.id));
     const [cart, setCart] = useState<PriceParams[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setTimeout(() => setLoading(false), 1000); // Simulate data fetching
+    }, []);
 
     useEffect(() => {
         const storedValue = localStorage.getItem('stripe-ready-cart') || '[]';
@@ -136,14 +138,35 @@ export default function ({
             <div className="flex gap-16 mt-8">
                 <div>
                     <div className="flex space-x-4">
-                        <div className="flex flex-col space-y-4">
-                            {product.images.map((image, index) => (
-                                <div className="cursor-pointer" onClick={() => setSelectedImage(image)} key={index}>
-                                    <img src={image} alt={`Product Image ${index + 1}`} className="max-w-[75px] object-cover rounded-md" />
+                        {loading ? (
+                            <ProductImageSkeleton />
+                        ) : (
+                            <>
+                                {/* Thumbnails Column */}
+                                <div className="flex flex-col space-y-4">
+                                    {product.images.map((image, index) => (
+                                        <div
+                                            className="cursor-pointer"
+                                            onClick={() => setSelectedImage(image)}
+                                            key={index}
+                                        >
+                                            <img
+                                                src={image}
+                                                alt={`Product Image ${index + 1}`}
+                                                className="max-w-[75px] object-cover rounded-md"
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                        <img src={selectedImage} alt={`Product Image`} className="max-w-[500px] object-cover rounded-md" />
+
+                                {/* Main Image Display */}
+                                <img
+                                    src={selectedImage}
+                                    alt="Product Image"
+                                    className="max-w-[500px] object-cover rounded-md"
+                                />
+                            </>
+                        )}
                     </div>
                 </div>
                 <div className="border-l-1 pl-4 w-3/4">
