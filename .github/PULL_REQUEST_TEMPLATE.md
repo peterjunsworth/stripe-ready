@@ -19,7 +19,7 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 - [ ] Test 2
 
 ## Checklist
-- [ ] I have read the [CONTRIBUTING](./CONTRIBUTING.md) guidelines.
+- [ ] I have read the [CONTRIBUTING](/CONTRIBUTING.md) guidelines.
 - [ ] My code follows the project's coding style.
 - [ ] I have updated the documentation accordingly (if applicable).
 - [ ] I have added tests to cover my changes (if applicable).
