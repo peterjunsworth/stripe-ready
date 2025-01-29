@@ -68,7 +68,7 @@ This is an open-source project, and we encourage collaboration from the communit
 - **Submit an Issue**: Use the Issues tab to report bugs or suggest changes.
 - **Create a Pull Request:**: Fork the repository, make your changes, and submit a pull request for review.
 
-To contribute to **Stripe Ready**, please refer to the [CONTRIBUTING.md](https://github.com/peterjunsworth/stripe-ready/blob/main/CONTRIBUTING.md) file for detailed guidelines.
+To contribute to **Stripe Ready**, please refer to the [CONTRIBUTING.md](./CONTRIBUTING.md) file for detailed guidelines.
 
 ## How to Contribute
 
