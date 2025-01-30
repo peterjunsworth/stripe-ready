@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import CartIcon from '../icons/icon-cart';
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Image } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Image, Badge } from "@nextui-org/react";
 import {
     Dropdown,
     DropdownTrigger,
@@ -10,10 +10,29 @@ import {
     DropdownItem
 } from "@nextui-org/dropdown";
 import { Logo } from "@/app/components/icons/icon-logo";
+import { PriceParams } from '@/types/interfaces';
 
 export default function Header() {
     
     const [businessName, setBusinessName] = useState("");
+    const [cartCount, setCartCount] = useState(0);
+
+    useEffect(() => {
+        const handleSameTabChange = () => {
+            const cartValues = localStorage.getItem('stripe-ready-cart') || '[]';
+            const totalQuantity = JSON.parse(cartValues)?.length ?
+                JSON.parse(cartValues).reduce((sum: number, item: PriceParams) => sum + (item.quantity ?? 0), 0) : 0;
+
+            setCartCount(totalQuantity);
+        };
+        const observer = new MutationObserver(handleSameTabChange);
+        observer.observe(document, { childList: true, subtree: true });
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+    
+
 
     useEffect(() => {
         const getAccountInfo = async () => {
@@ -68,14 +87,16 @@ export default function Header() {
                     </Dropdown>
                 </NavbarItem>
                 <NavbarItem>
-                    <Button
-                        as={Link}
-                        isIconOnly={true}
-                        href="/cart"
-                        variant="light"
-                    >
-                        <CartIcon />
-                    </Button>
+                    <Badge color="primary" content={cartCount}>
+                        <Button
+                            as={Link}
+                            isIconOnly={true}
+                            href="/cart"
+                            variant="light"
+                        >
+                            <CartIcon />
+                        </Button>
+                    </Badge>
                 </NavbarItem>
             </NavbarContent>
         </Navbar>

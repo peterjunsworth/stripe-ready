@@ -44,8 +44,10 @@ const CartItem = ({
     const productOptions = (variants: ProductParams[]) => {
         if (!variants.length) return [];
         const items: { [key: string]: any }[] = [];
-        variants.map((variant: any) => {
-            items.push(JSON.parse(variant?.metadata?.variant_options));
+        variants.forEach((variant: any) => {
+            if (variant?.metadata?.variant_options) {
+                items.push(JSON.parse(variant?.metadata?.variant_options));
+            }
         });
         const result = Object.keys(items[0]).reduce((acc: { [key: string]: any }, key) => {
             acc[key.toLowerCase()] = [...new Set(items.map(item => item[key]))];
