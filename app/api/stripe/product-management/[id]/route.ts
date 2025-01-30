@@ -89,10 +89,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         });
         const body = updatedImages.length ? { ...productData, images: updatedImages } : productData;
         // Update the product using the Stripe API
-        const product = await updateProduct(id, {
+        const response = await updateProduct(id, {
             ...body
         });
-        return NextResponse.json({ success: true, product });
+        const product = response instanceof Response ? await response.json() : response;
+        return NextResponse.json({ success: true, product: product?.product });
     } catch (error: any) {
         console.error('Error updating product in Stripe:', error);
         return Response.json({ success: false, error: error.message }, { status: 500 });

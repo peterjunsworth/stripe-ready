@@ -128,15 +128,16 @@ export async function POST(req: NextRequest) {
 
         console.log(productData);
         // Create a new product using the Stripe API
-        const product = await createProduct({
+        const response = await createProduct({
             ...productData,
             images: updatedImages,
         });
-
+        
+        const product = response instanceof Response ? await response.json() : response;
         // Return the created product data
         return Response.json({
             success: true,
-            product: product
+            product: product?.product
         });
     } catch (error: any) {
         console.error('Error creating product in Stripe:', error);
