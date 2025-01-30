@@ -1,6 +1,7 @@
 import '@/styles/globals.css';
 import { Inter } from 'next/font/google';
 import Header from '@/app/components/global/header';
+import { ToastProvider } from '@/app/components/elements/toast-container';
 
 const interLight = Inter({
   subsets: ['latin'],
@@ -16,10 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${interLight.className}`}>
-        <Header />
-        <main className="p-8">
-          {children}
-        </main>
+        <ToastProvider>
+          <Header />
+          <main className="p-8">
+            {children}
+          </main>
+        </ToastProvider>
       </body>
     </html>
   );

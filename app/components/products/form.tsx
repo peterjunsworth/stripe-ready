@@ -9,6 +9,7 @@ import CopyParentData from '@/app/components/elements/modals/copy-parent-data';
 import UpdateAllVariants from '../elements/modals/update-all-variants';
 import { PriceParams, ProductFormData, defaultProductData, VariantFeature } from '@/types/interfaces';
 import { findDifferences, cleanData } from '@/app/utils/utility-methods';
+import { useToast } from "@/app/components/elements/toast-container";
 
 export default function ProductForm({ 
     title,
@@ -42,6 +43,8 @@ export default function ProductForm({
     );
     const [showUpdateVariantsModal, setShowUpdateVariantsModal] = useState(false);
     const [productDataChanges, setProductDataChanges] = useState({});
+
+    const { showToast } = useToast();
 
     useEffect(() => {
         if (parentPrices.length) {
@@ -115,7 +118,8 @@ export default function ProductForm({
         e.preventDefault();
         const metadata = sortMetadata();
         const productData = cleanData(formData, defaultProductData);
-        const url = productId ? `/api/stripe/product-management/${productId}` : '/api/stripe/product-management';
+        const newProduct = !productId;
+        const url = !newProduct ? `/api/stripe/product-management/${productId}` : '/api/stripe/product-management';
         const response = await fetch(url, {
             method: productId ? 'PUT' : 'POST',
             headers: {
@@ -142,6 +146,9 @@ export default function ProductForm({
         } else {
             console.log('Error creating product');
         }
+        showToast(newProduct 
+            ?   `${isVariant ? "Variant" : "Product"} Created! Now Create a Price!`
+            :   `${isVariant ? "Variant" : "Product"} Updated!`);
     };
 
     return (

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { CartParams, PriceParams, ProductParams } from "@/types/interfaces";
 import { Divider, Image, Input, Select, SelectItem } from "@nextui-org/react";
 import { cheapestNonRecurring } from "@/app/utils/utility-methods";
+import { useToast } from "@/app/components/elements/toast-container";
 
 const CartItem = ({ 
     price,
@@ -20,6 +21,8 @@ const CartItem = ({
     const [canRender, setCanRender] = useState<boolean>(false);
     const [selectedVariant, setSelectedVariant] = useState<{ [key: string]: any }>({});
     const [numMatches, setNumMatches] = useState<number>(1);
+
+    const { showToast } = useToast();
 
     useEffect(() => {
         setCurrentCart(cart);
@@ -86,7 +89,7 @@ const CartItem = ({
             ...expandedPrice,
             unit_amount: expandedPrice.unit_amount ?? null,
             currency: expandedPrice.currency ?? '',
-            product: expandedPrice.product ?? '', // Add a default value for product
+            product: expandedPrice.product ?? '',
         });
         setCanRender(true);
     }
@@ -97,20 +100,15 @@ const CartItem = ({
 
     const removeDuplicateItems = (items: CartParams[]) => {
         const uniqueCart = items.reduce((acc: CartParams[], item: CartParams) => {
-            // Check if the item already exists in the accumulator based on the id
             const existingItem = acc.find((obj) => obj.id === item.id);
-
             if (existingItem) {
-                // If the item exists, sum the quantity
                 existingItem.quantity += item.quantity;
             } else {
-                // If not, add the item to the accumulator
                 acc.push({ ...item });
             }
 
             return acc;
         }, []);
-        console.log(uniqueCart);
         return uniqueCart;
     }
 
@@ -179,6 +177,7 @@ const CartItem = ({
             setCart(updatedCart);
             localStorage.setItem('stripe-ready-cart', JSON.stringify(updatedCart));
         }
+        showToast("Cart Updated!");
     };
 
     const changeQuantity = (quantity: number) => {
@@ -196,6 +195,7 @@ const CartItem = ({
             })
             setCart(updatedCart);
             localStorage.setItem('stripe-ready-cart', JSON.stringify(updatedCart));
+            showToast("Quantity Updated!");
         }
     }
 
@@ -203,6 +203,7 @@ const CartItem = ({
         const updatedCart = currentCart.filter((item) => item.id !== itemId.toString());
         setCart(updatedCart);
         localStorage.setItem('stripe-ready-cart', JSON.stringify(updatedCart));
+        showToast("Product Removed from Cart!");
     };
 
     return (

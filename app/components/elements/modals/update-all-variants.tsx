@@ -4,6 +4,7 @@ import React from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import { defaultProductData, defaultPriceData, ProductParams, ProductFormData, PriceParams } from '@/types/interfaces';
 import { cleanData, intersectObjects } from '@/app/utils/utility-methods';
+import { useToast } from "@/app/components/elements/toast-container";
 
 export default function UpdateAllVariants({
     parentProductId,
@@ -23,6 +24,8 @@ export default function UpdateAllVariants({
     setProductDataChanges: Function
 }) {
 
+    const { showToast } = useToast();
+
     async function fetchProductPrices(productId: string) {
         try {
             const response = await fetch(`/api/stripe/price-management?productId=${productId}`);
@@ -31,7 +34,10 @@ export default function UpdateAllVariants({
             if (!response.ok) {
                 throw new Error(data.error || 'Failed to fetch prices');
             }
-            const prices = data?.prices?.data.map((price: any) => intersectObjects(price, defaultPriceData))
+            const prices = data?.prices?.data.map((price: any) => ({
+                ...intersectObjects(price, defaultPriceData),
+                id: price.id
+            }));
             return (prices);
         } catch (error: any) {
             console.error('Error:', error.message);
@@ -112,6 +118,7 @@ export default function UpdateAllVariants({
             await saveVariant(product.id as string, productDataChanges);
         }
         setShowUpdateVariantsModal(false);
+        showToast('Variant Products Updated!');
     }
 
     async function fetchProductVariants() {
@@ -120,13 +127,13 @@ export default function UpdateAllVariants({
             const data = await response.json();
             let variantPrices: PriceParams[] = [];
             if (priceDataChanges.length > 0) {
-                console.log(data.products.length);
                 for await (const product of data.products) {
                     const prices = await fetchProductPrices(product.id);
                     variantPrices = [...variantPrices, ...prices];
                 }
             }
             if (Object.keys(productDataChanges).length > 0) updateAllVariantProducts(data.products || []);
+            console.log(variantPrices);
             if (priceDataChanges.length > 0) updateAllVariantPrices(variantPrices, data.products || []);
         } catch (error: any) {
             console.error('Error:', error.message);
