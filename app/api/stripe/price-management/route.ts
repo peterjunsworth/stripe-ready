@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { PriceParams } from '@/types/interfaces';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // Create a Stripe Price
 export async function createPrice(priceParams: PriceParams) {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         delete priceParams.id;
         const body = {
             ...priceParams,
@@ -69,6 +78,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         // Parse the incoming JSON request body
         const priceData = await req.json();
         // Validate required fields

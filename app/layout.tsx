@@ -1,6 +1,8 @@
 import '@/styles/globals.css';
 import { Inter } from 'next/font/google';
-import Header from '@/app/components/global/header';
+import HeaderContainer from '@/app/components/global/header-container';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ToastProvider } from '@/app/components/elements/toast-container';
 
 const interLight = Inter({
@@ -9,16 +11,23 @@ const interLight = Inter({
   display: 'swap',
 });
 
-export default function RootLayout({
-  children,
+export default async function RootLayout({
+    children,
+    pageProps
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
+    pageProps: {
+      session: any; // Replace 'any' with the actual type of the session data
+    };
 }) {
+
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <body className={`${interLight.className}`}>
         <ToastProvider>
-          <Header />
+          <HeaderContainer session={session} />
           <main className="p-8">
             {children}
           </main>

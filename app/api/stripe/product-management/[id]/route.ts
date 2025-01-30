@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { ProductParams } from '@/types/interfaces';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function getProductById(id: string) {
     try {
@@ -17,6 +19,12 @@ export async function getProductById(id: string) {
 
 export async function updateProduct(productId: string, productData: Partial<ProductParams>) {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
 
         const updatedProductData = {
             ...productData,
@@ -61,6 +69,13 @@ export async function GET(
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         const { id } = await params;
         // Parse the incoming JSON request body
         const productData = await req.json();
@@ -74,9 +89,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         });
         const body = updatedImages.length ? { ...productData, images: updatedImages } : productData;
         // Update the product using the Stripe API
-        const product = await updateProduct(id, {
+        const response = await updateProduct(id, {
             ...body
         });
+        const product = response instanceof Response ? await response.json() : response;
         return NextResponse.json({ success: true, product: product?.product });
     } catch (error: any) {
         console.error('Error updating product in Stripe:', error);
@@ -86,6 +102,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         // Extract the priceId from the request URL
         const { id } = await params;
 
@@ -94,12 +117,13 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
             return NextResponse.json({ success: false, error: 'productId is required' }, { status: 400 });
         }
         // Attempt to deactivate the price via Stripe API
-        const deletedProduct = await updateProduct(id, {
+        const response = await updateProduct(id, {
             active: false,
             metadata: {
                 deleted: true
             }
         });
+        const deletedProduct = response instanceof Response ? await response.json() : response;
         return NextResponse.json({ success: true, product: deletedProduct?.product });
     } catch (error: any) {
         console.error('Error handling DELETE request:', error.message);

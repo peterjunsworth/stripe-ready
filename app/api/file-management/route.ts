@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const UPLOAD_DIR = path.resolve(process.env.ROOT_PATH ?? "", "public/images/products");
 
 export const POST = async (req: NextRequest) => {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         const formData = await req.formData();
         const fileEntries = Array.from(formData.entries()).filter(([key, value]) => value instanceof File);
 
@@ -40,6 +49,13 @@ export const POST = async (req: NextRequest) => {
 
 export const DELETE = async (req: NextRequest) => {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         const { fileName } = await req.json();
 
         if (!fileName) {

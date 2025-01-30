@@ -131,7 +131,6 @@ export default function ProductForm({
             }),
         });
         if (response.ok) {
-            console.log('Product created successfully');
             const data = await response.json();
             setProductId(data?.product?.id);
             const changes = findDifferences({

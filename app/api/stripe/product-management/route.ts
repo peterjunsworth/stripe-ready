@@ -1,11 +1,20 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { ProductParams, ProductTableProps } from '@/types/interfaces';
 import { getProductPrices } from '../price-management/route';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // Create a Product and Price
 export async function createProduct(productParams: ProductParams) {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         delete (productParams as any).shipping_requirements;  
         delete (productParams as any).tax_code;        // Create the product using Stripe's API
         const product = await stripe.products.create({
@@ -95,6 +104,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         // Parse the incoming JSON request body
         const productData = await req.json();
 
@@ -112,11 +128,12 @@ export async function POST(req: NextRequest) {
 
         console.log(productData);
         // Create a new product using the Stripe API
-        const product = await createProduct({
+        const response = await createProduct({
             ...productData,
             images: updatedImages,
         });
-
+        
+        const product = response instanceof Response ? await response.json() : response;
         // Return the created product data
         return Response.json({
             success: true,

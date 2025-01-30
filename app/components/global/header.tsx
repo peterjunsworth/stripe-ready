@@ -11,11 +11,15 @@ import {
 } from "@nextui-org/dropdown";
 import { Logo } from "@/app/components/icons/icon-logo";
 import { PriceParams } from '@/types/interfaces';
+import { useSession } from "next-auth/react";
+import { signOut } from 'next-auth/react';
 
 export default function Header() {
     
     const [businessName, setBusinessName] = useState("");
     const [cartCount, setCartCount] = useState(0);
+
+    const { data: session } = useSession();
 
     useEffect(() => {
         const handleSameTabChange = () => {
@@ -46,6 +50,10 @@ export default function Header() {
         getAccountInfo();
     }, []);
 
+    const handleSignOut = () => {
+        signOut({ callbackUrl: '/sign-in' }); // You can customize the redirect URL
+    };
+
     return (
         <Navbar
             maxWidth="full"
@@ -70,25 +78,30 @@ export default function Header() {
                 </NavbarItem>
             </NavbarContent>
             <NavbarContent justify="end">
-                <NavbarItem>
-                    <Dropdown>
-                        <DropdownTrigger>
-                            <Button variant='bordered'>Admin</Button>
-                        </DropdownTrigger>
-                        <DropdownMenu aria-label="Manage Options">
-                            <DropdownItem>
-                                <Link color="foreground" href="/admin/products">
-                                    Manage Products
-                                </Link>
-                            </DropdownItem>
-                            <DropdownItem>
-                                <Link color="foreground" href="/admin/shipping">
-                                    Manage Shipping Rates
-                                </Link>
-                            </DropdownItem>
-                        </DropdownMenu>
-                    </Dropdown>
-                </NavbarItem>
+                {session && (
+                    <NavbarItem>
+                        <Dropdown>
+                            <DropdownTrigger>
+                                <Button variant='bordered'>Admin</Button>
+                            </DropdownTrigger>
+                            <DropdownMenu aria-label="Manage Options">
+                                <DropdownItem>
+                                    <Link color="foreground" href="/admin/products">
+                                        Manage Products
+                                    </Link>
+                                </DropdownItem>
+                                <DropdownItem>
+                                    <Link color="foreground" href="/admin/shipping">
+                                        Manage Shipping Rates
+                                    </Link>
+                                </DropdownItem>
+                                <DropdownItem className='p-0 mt-2'>
+                                    <Button className="w-full" color="danger" onClick={handleSignOut}>Sign Out</Button>
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </NavbarItem>
+                )}
                 <NavbarItem>
                     <Badge color="primary" content={cartCount}>
                         <Button
