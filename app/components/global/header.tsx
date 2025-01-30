@@ -19,20 +19,23 @@ export default function Header() {
 
     useEffect(() => {
         const handleSameTabChange = () => {
-            const cartValues = localStorage.getItem('stripe-ready-cart') || '[]';
-            const totalQuantity = JSON.parse(cartValues)?.length ?
-                JSON.parse(cartValues).reduce((sum: number, item: PriceParams) => sum + (item.quantity ?? 0), 0) : 0;
-
-            setCartCount(totalQuantity);
+            try {
+                const cartValues = localStorage.getItem('stripe-ready-cart') ?? '[]';
+                const parsedCartValues = JSON.parse(cartValues);
+                const totalQuantity = parsedCartValues.length
+                    ? parsedCartValues.reduce((sum: number, item: PriceParams) => sum + (item.quantity ?? 0), 0)
+                    : 0;
+                setCartCount(totalQuantity);
+            } catch (error) {
+                console.log(error);
+            }
         };
-        const observer = new MutationObserver(handleSameTabChange);
-        observer.observe(document, { childList: true, subtree: true });
+        window.addEventListener('cartUpdated', handleSameTabChange);
+        handleSameTabChange();
         return () => {
-            observer.disconnect();
+            window.removeEventListener('cartUpdated', handleSameTabChange);
         };
     }, []);
-    
-
 
     useEffect(() => {
         const getAccountInfo = async () => {

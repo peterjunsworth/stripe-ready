@@ -5,12 +5,15 @@ import { Button, Dropdown, DropdownMenu, DropdownItem, DropdownTrigger, Link, Ta
 import MoreIcon from "@/app/components/icons/icon-more";
 import { ProductTableProps } from "@/types/interfaces";
 import { formatUnitAmountRange } from "@/app/utils/utility-methods";
+import { useToast } from "@/app/components/elements/toast-container";
 
 export default function ProductList({
     productsData,
 }: {
     productsData: ProductTableProps[],
 }) {
+
+    const { showToast } = useToast();
 
     const parentProducts = productsData
         .filter((product) => !product?.metadata?.parentProduct || product?.metadata?.parentProduct === product?.id)
@@ -70,11 +73,11 @@ export default function ProductList({
             });
 
             if (response.ok) {
-                console.log('Product deleted successfully');
                 setProducts((prevData) => {
-                    const updatedData = prevData.filter((_, i) => i !== index)
+                    const updatedData = prevData.filter((product, i) => product?.index !== index)
                     return updatedData;
                 });
+                showToast('Product deleted successfully!');
             } else {
                 console.error('Error deleting product');
             }

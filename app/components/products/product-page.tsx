@@ -4,6 +4,7 @@ import React, { use, useEffect, useState } from "react";
 import { ProductParams, PriceParams } from "@/types/interfaces";
 import { Button, Select, SelectItem } from "@nextui-org/react";
 import { ProductImageSkeleton } from "@/app/components/elements/skeleton-product-image";
+import { useToast } from "@/app/components/elements/toast-container";
 
 export default function ({ 
     product, 
@@ -22,6 +23,8 @@ export default function ({
     const [canAddToCart, setCanAddToCart] = useState<boolean>(!productVariants.length && Boolean(product?.default_price?.id || cheapestNonRecurring?.id));
     const [cart, setCart] = useState<PriceParams[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const { showToast } = useToast();
 
     useEffect(() => {
         setTimeout(() => setLoading(false), 1000); // Simulate data fetching
@@ -78,10 +81,16 @@ export default function ({
         let updatedCart = [...cart];
         const variants = matchingVariants(selectedVariant);
         if (variants[0]?.default_price?.id) {
-            updatedCart = [...cart, { ...variants[0]?.default_price } as PriceParams];
+            updatedCart = [...cart, { 
+                ...variants[0]?.default_price,
+                quantity: 1
+            } as PriceParams];
         } else {
             const cheapestPrice = variants[0]?.prices?.filter((price: PriceParams) => price.type === 'one_time')?.reduce((min: PriceParams, price: PriceParams) => (price.unit_amount ?? 0 < (min.unit_amount ?? 0) ? price : min));
-            updatedCart = [...cart, { ...cheapestPrice } as PriceParams];
+            updatedCart = [...cart, {
+                ...cheapestPrice,
+                quantity: 1
+            } as PriceParams];
         }
         return updatedCart
     }
@@ -89,9 +98,15 @@ export default function ({
     const addProductToCart = () => {
         let updatedCart = [...cart];
         if (product.default_price?.id) {
-            updatedCart = [...cart, { ...product.default_price } as PriceParams];
+            updatedCart = [...cart, {
+                ...product.default_price,
+                quantity: 1
+            } as PriceParams];
         } else {
-            updatedCart = [...cart, { ...cheapestNonRecurring } as PriceParams];
+            updatedCart = [...cart, {
+                ...cheapestNonRecurring,
+                quantity: 1
+            } as PriceParams];
         }
         return updatedCart
     }
@@ -104,9 +119,17 @@ export default function ({
         } else {
             updatedCart = addProductToCart();
         }
-        const uniqueCart = updatedCart.filter((item, index, self) => self.findIndex((obj) => obj.id === item.id) === index);
-        setCart(uniqueCart);
-        localStorage.setItem('stripe-ready-cart', JSON.stringify(uniqueCart));
+        const uniqueCart = updatedCart.reduce((acc: Record<string, PriceParams>, item: PriceParams) => {
+            if (item.id) {
+                acc[item.id] = acc[item.id] ? { ...acc[item.id], quantity: (acc[item.id].quantity ?? 0) + (item.quantity ?? 0) } : item;
+            }
+            return acc;
+        }, {});
+        //const uniqueCart = updatedCart.filter((item, index, self) => self.findIndex((obj) => obj.id === item.id) === index);
+        setCart(Object.values(uniqueCart));
+        localStorage.setItem('stripe-ready-cart', JSON.stringify(Object.values(uniqueCart)));
+        window.dispatchEvent(new Event('cartUpdated'));
+        showToast("Product Added to Cart!");
     };
 
     return (

@@ -12,6 +12,7 @@ import {
     TableCell
 } from "@nextui-org/table";
 import { ShippingRate } from '@/types/interfaces';
+import { useToast } from "@/app/components/elements/toast-container";
 
 export default function ShippingForm({
     shippingRatesData,
@@ -22,7 +23,6 @@ export default function ShippingForm({
     const [amount, setAmount] = useState<number>(0);
     const [minValue, setMinValue] = useState<string>('');
     const [maxValue, setMaxValue] = useState<string>('');
-    const [message, setMessage] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [currentRateId, setCurrentRateId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -32,9 +32,10 @@ export default function ShippingForm({
 
     const [shippingRates, setShippingRates] = useState<ShippingRate[]>(shippingRatesData);
 
+    const { showToast } = useToast();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setMessage('');
         setError('');
         setIsLoading(true); // Set loading state
 
@@ -58,7 +59,7 @@ export default function ShippingForm({
                 throw new Error('Failed to create or update shipping rate');
             }
             const data = await response.json();
-            setMessage('Shipping rate persisted successfully!');
+            showToast('Shipping Rate Saved!');
             if (currentRateId !== null) {
                 setShippingRates((prevRates) =>
                     prevRates.map((rate) => (rate.id === currentRateId.toString() ? data.shippingRate : rate))
@@ -85,7 +86,6 @@ export default function ShippingForm({
     };
 
     const handleDeleteRate = async (id: string) => {
-        setMessage('');
         setError('');
 
         try {
@@ -96,9 +96,8 @@ export default function ShippingForm({
             if (!response.ok) {
                 throw new Error('Failed to delete shipping rate');
             }
-
             setShippingRates((prevRates) => prevRates.filter((rate) => String(rate.id) !== String(id)));
-            setMessage('Shipping rate deleted successfully!');
+            showToast('Shipping Rate Deleted!');
         } catch (err) {
             setError('Failed to delete shipping rate. Please try again.');
         }
@@ -142,7 +141,6 @@ export default function ShippingForm({
                 >
                     {currentRateId !== null ? 'Update Shipping Rate' : 'Persist Shipping Rate'}
                 </Button>
-                {message && <p className="text-green-500">{message}</p>}
                 {error && <p className="text-red-500">{error}</p>}
             </form>
 

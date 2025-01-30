@@ -32,10 +32,8 @@ export function intersectObjects(obj1: any, obj2: any): any {
       } else {
         // Add primitive or non-object values
         result[key] = value !== null ? value : obj2[key] ?? '';
-
       }
     }
-
     return result;
   }, {});
 }
