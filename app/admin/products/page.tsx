@@ -9,7 +9,7 @@ import { listProducts } from "@/app/api/stripe/product-management/route";
 import ProductTable from '@/app/components/products/table';
 import ButtonRouter from "@/app/components/elements/button-route";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function Page() {
 

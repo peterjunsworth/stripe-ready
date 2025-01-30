@@ -3,7 +3,7 @@ import { stripe } from '@/lib/stripe';
 import { ProductParams, ProductTableProps } from '@/types/interfaces';
 import { getProductPrices } from '../price-management/route';
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // Create a Product and Price
 export async function createProduct(productParams: ProductParams) {

@@ -7,6 +7,7 @@ import { defaultPriceData, PriceParams } from '@/types/interfaces';
 import { intersectObjects } from '@/app/utils/utility-methods';
 import TrashIcon from '@/app/components/icons/icon-trash';
 import TagIcon from '@/app/components/icons/icon-tag';
+import { useToast } from "@/app/components/elements/toast-container";
 
 export default function PriceForm({
     title,
@@ -23,6 +24,8 @@ export default function PriceForm({
     setParentPrices: Function,
     isVariant: boolean
 }) {
+
+    const { showToast } = useToast();
 
     const [activeProduct, setActiveProduct] = useState<string | undefined>(productId);
     const [pricesData, setPricesData] = useState<PriceParams[]>(
@@ -202,6 +205,7 @@ export default function PriceForm({
             if (hasVariants) {
                 setParentPrices(pricesData);
             }
+            showToast('Price saved successfully!');
         } else {
             console.log('Error saving price');
         }

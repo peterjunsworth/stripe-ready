@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { updatePrice } from '@/app/api/stripe/price-management/[id]/route';
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function DELETE(
     req: NextRequest,

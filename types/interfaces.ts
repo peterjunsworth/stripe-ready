@@ -36,6 +36,7 @@ export interface ProductTableProps {
     active: boolean;
     unit_amount: number;
     metadata: Record<string, any>;
+    index?: number;
 }
 
 export interface PriceParams {

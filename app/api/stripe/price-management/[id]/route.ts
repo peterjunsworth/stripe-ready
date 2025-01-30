@@ -3,7 +3,7 @@ import { stripe } from '@/lib/stripe';
 import { PriceParams, PartialPriceParams } from '@/types/interfaces';
 import { createPrice } from '../route';
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function updatePrice(priceId: string, priceData: PartialPriceParams) {
     try {

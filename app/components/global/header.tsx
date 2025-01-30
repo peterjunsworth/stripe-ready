@@ -11,7 +11,8 @@ import {
 } from "@nextui-org/dropdown";
 import { Logo } from "@/app/components/icons/icon-logo";
 import { PriceParams } from '@/types/interfaces';
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { signOut } from 'next-auth/react';
 
 export default function Header() {
     
@@ -22,20 +23,23 @@ export default function Header() {
 
     useEffect(() => {
         const handleSameTabChange = () => {
-            const cartValues = localStorage.getItem('stripe-ready-cart') || '[]';
-            const totalQuantity = JSON.parse(cartValues)?.length ?
-                JSON.parse(cartValues).reduce((sum: number, item: PriceParams) => sum + (item.quantity ?? 0), 0) : 0;
-
-            setCartCount(totalQuantity);
+            try {
+                const cartValues = localStorage.getItem('stripe-ready-cart') ?? '[]';
+                const parsedCartValues = JSON.parse(cartValues);
+                const totalQuantity = parsedCartValues.length
+                    ? parsedCartValues.reduce((sum: number, item: PriceParams) => sum + (item.quantity ?? 0), 0)
+                    : 0;
+                setCartCount(totalQuantity);
+            } catch (error) {
+                console.log(error);
+            }
         };
-        const observer = new MutationObserver(handleSameTabChange);
-        observer.observe(document, { childList: true, subtree: true });
+        window.addEventListener('cartUpdated', handleSameTabChange);
+        handleSameTabChange();
         return () => {
-            observer.disconnect();
+            window.removeEventListener('cartUpdated', handleSameTabChange);
         };
     }, []);
-    
-
 
     useEffect(() => {
         const getAccountInfo = async () => {
@@ -45,6 +49,10 @@ export default function Header() {
         }
         getAccountInfo();
     }, []);
+
+    const handleSignOut = () => {
+        signOut({ callbackUrl: '/sign-in' }); // You can customize the redirect URL
+    };
 
     return (
         <Navbar
@@ -86,6 +94,9 @@ export default function Header() {
                                     <Link color="foreground" href="/admin/shipping">
                                         Manage Shipping Rates
                                     </Link>
+                                </DropdownItem>
+                                <DropdownItem className='p-0 mt-2'>
+                                    <Button className="w-full" color="danger" onClick={handleSignOut}>Sign Out</Button>
                                 </DropdownItem>
                             </DropdownMenu>
                         </Dropdown>

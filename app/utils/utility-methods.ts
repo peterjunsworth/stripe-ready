@@ -32,10 +32,8 @@ export function intersectObjects(obj1: any, obj2: any): any {
       } else {
         // Add primitive or non-object values
         result[key] = value !== null ? value : obj2[key] ?? '';
-
       }
     }
-
     return result;
   }, {});
 }
@@ -59,7 +57,6 @@ export function formatUnitAmountRange(items: { unit_amount: number }[]): string 
 }
 
 export const findDifferences = (obj1: any, obj2: any) => {
-  console.log(obj1);
   const getDifferences = (o1: any, o2: any) => {
     let result: Record<string, any> = Array.isArray(o1) ? [] : {};
     Object.keys(o1 || {}).forEach((key) => {
