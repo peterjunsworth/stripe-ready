@@ -117,13 +117,14 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
             return NextResponse.json({ success: false, error: 'productId is required' }, { status: 400 });
         }
         // Attempt to deactivate the price via Stripe API
-        const deletedProduct = await updateProduct(id, {
+        const response = await updateProduct(id, {
             active: false,
             metadata: {
                 deleted: true
             }
         });
-        return NextResponse.json({ success: true, product: deletedProduct });
+        const deletedProduct = response instanceof Response ? await response.json() : response;
+        return NextResponse.json({ success: true, product: deletedProduct?.product });
     } catch (error: any) {
         console.error('Error handling DELETE request:', error.message);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
