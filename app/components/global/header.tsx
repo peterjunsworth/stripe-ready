@@ -11,11 +11,14 @@ import {
 } from "@nextui-org/dropdown";
 import { Logo } from "@/app/components/icons/icon-logo";
 import { PriceParams } from '@/types/interfaces';
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Header() {
     
     const [businessName, setBusinessName] = useState("");
     const [cartCount, setCartCount] = useState(0);
+
+    const { data: session } = useSession();
 
     useEffect(() => {
         const handleSameTabChange = () => {
@@ -67,25 +70,27 @@ export default function Header() {
                 </NavbarItem>
             </NavbarContent>
             <NavbarContent justify="end">
-                <NavbarItem>
-                    <Dropdown>
-                        <DropdownTrigger>
-                            <Button variant='bordered'>Admin</Button>
-                        </DropdownTrigger>
-                        <DropdownMenu aria-label="Manage Options">
-                            <DropdownItem>
-                                <Link color="foreground" href="/admin/products">
-                                    Manage Products
-                                </Link>
-                            </DropdownItem>
-                            <DropdownItem>
-                                <Link color="foreground" href="/admin/shipping">
-                                    Manage Shipping Rates
-                                </Link>
-                            </DropdownItem>
-                        </DropdownMenu>
-                    </Dropdown>
-                </NavbarItem>
+                {session && (
+                    <NavbarItem>
+                        <Dropdown>
+                            <DropdownTrigger>
+                                <Button variant='bordered'>Admin</Button>
+                            </DropdownTrigger>
+                            <DropdownMenu aria-label="Manage Options">
+                                <DropdownItem>
+                                    <Link color="foreground" href="/admin/products">
+                                        Manage Products
+                                    </Link>
+                                </DropdownItem>
+                                <DropdownItem>
+                                    <Link color="foreground" href="/admin/shipping">
+                                        Manage Shipping Rates
+                                    </Link>
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </NavbarItem>
+                )}
                 <NavbarItem>
                     <Badge color="primary" content={cartCount}>
                         <Button

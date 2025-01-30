@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { updatePrice } from '@/app/api/stripe/price-management/[id]/route';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]";
 
 export async function DELETE(
     req: NextRequest,
     { params }: { params: { id: string } },
 ) {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         // Extract the ID from the params
         const { id } = await params;
 

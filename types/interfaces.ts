@@ -1,6 +1,7 @@
-// Define and export interfaces for product and price parameters
-
-import { P } from "vitest/dist/reporters-OH1c16Kq.js";
+export interface Credentials {
+    username: string;
+    password: string;
+}
 
 export interface ProductParams {
     id?: string;

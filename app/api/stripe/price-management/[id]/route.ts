@@ -2,9 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { PriceParams, PartialPriceParams } from '@/types/interfaces';
 import { createPrice } from '../route';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]";
 
 export async function updatePrice(priceId: string, priceData: PartialPriceParams) {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         const price = await stripe.prices.update(priceId, {
             ...priceData
         });
@@ -18,6 +27,13 @@ export async function updatePrice(priceId: string, priceData: PartialPriceParams
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string }}) {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         const { id } = await params;
         // Parse the incoming JSON request body
         const priceData = await req.json();
@@ -41,6 +57,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
+
+        const session = await getServerSession(authOptions);
+
+        if (!session) {
+            return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+        }
+
         // Extract the priceId from the request URL
         const { id } = await params;
 
