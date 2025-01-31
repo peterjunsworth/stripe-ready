@@ -30,18 +30,19 @@ export default async function Page({ params }: { params: { id: string } }) {
     const cheapestNonRecurringPrice = cheapestNonRecurring(priceData);
     const uniqueRecurringIntervalsPrice = uniqueRecurringIntervals(priceData);
 
-    // TODO: handle recurring as subscription later
-
     const productVariants = await getProductVariants(id);
-
+    const filteredProducts = productVariants.filter(product =>
+        product.prices.some((price: { active: boolean }) => price.active === true)
+    );
 
     return (
         <div className="p-4">
             <Suspense fallback={<CircularProgress aria-label="Loading..." />}>
                 <ProductDetails
                     product={product}
-                    productVariants={productVariants}
+                    productVariants={filteredProducts}
                     cheapestNonRecurring={cheapestNonRecurringPrice}
+                    shouldHaveVariants={productVariants.length > 0}
                 />
             </Suspense>
         </div>

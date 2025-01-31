@@ -271,7 +271,7 @@ const CartItem = ({
                                                     type="number"
                                                     name="quantity"
                                                     value={(item as { quantity: number }).quantity.toString()}
-                                                    className="mx-2.5 w-12 text-center"
+                                                    className="mx-2.5 w-16 text-center"
                                                     onChange={(event) => changeQuantity(parseInt(event.target.value))}
                                                     onBlur={(event) => {
                                                         if (!(item as { quantity: number }).quantity || (item as { quantity: number }).quantity < 1) {

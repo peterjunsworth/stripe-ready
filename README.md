@@ -65,6 +65,18 @@ Your application should now be running on [http://localhost:3000](http://localho
   npm start
   ```
 
+## In App Authentication
+
+The platform is setup to use NextAuth, with an administrator username, password and JWT secret stored in the .env file:
+
+- **NEXTAUTH_USERNAME**=Username of your choice
+- **NEXTAUTH_PASSWORD**=Password of your choice
+- **NEXTAUTH_SECRET**=A Secrte of your choice, used for the authentication JWT
+
+This is designed to eliminate additional 3rd party dependencies, however, you can modify [./app/api/auth/[...nextauth]/route.ts](./app/api/auth/[...nextauth]/route.ts) to connect to additional authentication services or databases.
+All administration API callls are blocked without an authenticated JWT, as are pages and CTA's.
+To authenticate, the Sign in Page can we accessed at: http://localhost:3000/sign-in
+
 ## Open Source Collaboration:
 
 This is an open-source project, and we encourage collaboration from the community! If you have ideas for improvements, new features, or bug fixes, feel free to:
