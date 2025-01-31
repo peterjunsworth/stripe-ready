@@ -84,3 +84,20 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         return NextResponse.json({ success: false, error: error.message },{ status: 500 });
     }
 }
+
+export async function GET(
+    req: NextRequest,
+    { params }: { params: { id: string } },
+) {
+    try {
+        const { id } = await params;
+        if (!id) {
+            return NextResponse.json({ success: false, error: 'Price ID is required' }, { status: 400 });
+        }
+        const price = await stripe.prices.retrieve(id);
+        return NextResponse.json({ success: true, price });
+    } catch (error: any) {
+        console.error('Error fetching price from Stripe:', error);
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+}

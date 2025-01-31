@@ -7,6 +7,7 @@ import { Button, Divider,Image, Select, SelectItem } from "@nextui-org/react";
 import CartItem from "@/app/components/checkout/cart-item";
 import { Suspense } from "react";
 import { CartSkeleton } from "@/app/components/elements/skeleton-cart-loader";
+import { useToast } from "../elements/toast-container";
 
 const CartManager = () => {
 
@@ -17,6 +18,7 @@ const CartManager = () => {
     const [shippingRateId, setShippingRateId] = useState<string>('');
     const [shippingSet, setShippingSet] = useState<boolean>(false);
     const [loading, setLoading] = useState(true);
+    const { showToast } = useToast();
 
     useEffect(() => {
         setCanCheckout(cart.find((item: any) => item.available === false) ? false : true);
@@ -70,11 +72,20 @@ const CartManager = () => {
         const data = await response.json();
 
         if (data.success) {
-            // Redirect to Stripe Checkout
-            window.location.href = data.session.url; // Redirect to the checkout session URL
+            window.location.href = data.session.url;
         } else {
+            for await (const item of cart) {
+                const price = await fetch(`/api/stripe/price-management/${item?.id}`);
+                const priceData = await price.json();
+                if (!priceData?.price?.active) {
+                    const product = await fetch(`/api/stripe/product-management/${priceData?.price?.product}`);
+                    const productData = await product.json();
+                    showToast(`${productData?.product?.name} is no longer available. Please remove it from your cart.`, 'bg-red-500');
+                    break;
+                }
+
+            }
             console.error(data.error);
-            // Handle error (e.g., show a message to the user)
         }
     };
 
