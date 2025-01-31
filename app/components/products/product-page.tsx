@@ -9,18 +9,24 @@ import { useToast } from "@/app/components/elements/toast-container";
 export default function ({ 
     product, 
     productVariants,
-    cheapestNonRecurring
+    cheapestNonRecurring,
+    shouldHaveVariants
 }: { 
     product: ProductParams, 
     productVariants: ProductParams[],
-    cheapestNonRecurring: PriceParams
+    cheapestNonRecurring: PriceParams,
+    shouldHaveVariants: boolean
 }) {
 
     const [selectedImage, setSelectedImage] = useState(product.images[0]);
     const [variantFeatures, setVariantFeatures] = useState<ProductParams[]>(product.metadata.variant_features ? JSON.parse(product.metadata.variant_features) : []);
     const [variantOptions, setVariantOptions] = useState<{ [key: string]: any[] }>({});
     const [selectedVariant, setSelectedVariant] = useState({});
-    const [canAddToCart, setCanAddToCart] = useState<boolean>(!productVariants.length && Boolean(product?.default_price?.id || cheapestNonRecurring?.id));
+    const [canAddToCart, setCanAddToCart] = useState<boolean>(
+        !productVariants.length && 
+        Boolean(product?.default_price?.id || cheapestNonRecurring?.id) &&
+        Boolean(!shouldHaveVariants || (shouldHaveVariants && productVariants.length > 0))
+    );
     const [cart, setCart] = useState<PriceParams[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -231,6 +237,10 @@ export default function ({
                         <h4 className="font-bold text-lg">Statement Descriptor</h4>
                         <p>{product.statement_descriptor}</p>
                     </div> */}
+
+                    {shouldHaveVariants && productVariants.length === 0 && (
+                        <h3 className="mt-2 text-red-500">This Product is currently not available.</h3>
+                    )}
 
                     {productVariants.length > 0 && (
                         <>

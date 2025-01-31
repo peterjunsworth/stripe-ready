@@ -47,6 +47,10 @@ export async function listProducts({ id }: { id?: string }) {
                     const response = await getProductPrices(product.id);
                     const data = await response.json();
                     const { success, prices } = data;
+                    const hasActive = prices.data.find((price: { active: boolean }) => price.active === true);
+                    if (!hasActive) {
+                        return null;
+                    }
                     return {
                         ...product,
                         prices: success ? prices.data : [], // Add prices if successfully fetched
@@ -57,8 +61,7 @@ export async function listProducts({ id }: { id?: string }) {
                 }
             })
         );
-
-        return enhancedProducts;
+        return enhancedProducts.filter((product) => product !== null);
     } catch (error: any) {
         console.error('Error retrieving products or prices:', error.message);
         throw error;
