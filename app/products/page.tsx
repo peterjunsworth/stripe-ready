@@ -38,6 +38,7 @@ export default async function Page() {
                                 key={product.id}
                                 isFooterBlurred 
                                 className="flex flex-col items-center"
+                                shadow="sm"
                             >
                                 <CardHeader className="p-4 flex-row items-center justify-between">
                                     <h4 className="text-black font-bold text-2xl truncate-text-single-line pr-4">{product.name}</h4>

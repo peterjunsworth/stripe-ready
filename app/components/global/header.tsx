@@ -57,6 +57,7 @@ export default function Header() {
     return (
         <Navbar
             maxWidth="full"
+            className="shadow-sm"
         >
             <NavbarBrand>
                 <Link color="foreground" href="/">
