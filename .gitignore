@@ -39,3 +39,5 @@ next-env.d.ts
 .windsurfrules
 
 .codiumai.toml
+
+/public/images/products/*
