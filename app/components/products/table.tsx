@@ -110,7 +110,7 @@ export default function ProductList({
             case "active":
                 return (
                     <Chip className="capitalize" size="sm" variant="flat">
-                        {cellValue.toString()}
+                        {cellValue ? "Active" : "Inactive"}
                     </Chip>
                 );
             case "prices":

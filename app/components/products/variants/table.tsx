@@ -106,7 +106,7 @@ export default function VariantsList({
             case "active":
                 return (
                     <Chip className="capitalize" size="sm" variant="flat">
-                        {cellValue.toString()}
+                        {cellValue ? "Active" : "Inactive"}
                     </Chip>
                 );
             case "prices":
