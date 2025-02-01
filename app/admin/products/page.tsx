@@ -35,9 +35,14 @@ export default async function Page() {
         )}
       </div>
       <Suspense fallback={<CircularProgress aria-label="Loading..." />}>
-        <ProductTable
-          productsData={products}
-        />
+        {products.length === 0 && (
+          <h3 className="text-lg m-8 text-center">You do not have any active products...</h3>
+        )}
+        {products.length > 0 && (
+          <ProductTable
+            productsData={products}
+          />
+        )}
       </Suspense>
     </div>
   );

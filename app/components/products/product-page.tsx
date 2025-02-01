@@ -140,7 +140,7 @@ export default function ({
 
     return (
         <>
-            <div className="flex items-center justify-between items-center mb-4">
+            <div className="flex justify-between items-start mb-4">
                 <div className="flex flex-col">
                     <h1 className="text-2xl font-bold">{product.name}</h1>
                     {product?.default_price?.unit_amount ?
@@ -164,9 +164,9 @@ export default function ({
                     </Button>
                 </div>
             </div>
-            <div className="flex gap-16 mt-8">
-                <div>
-                    <div className="flex space-x-4">
+            <div className="md:flex md:flex-start gap-16 mt-8">
+
+                    <div className="md:flex">
                         {loading ? (
                             <ProductImageSkeleton />
                         ) : (
@@ -188,17 +188,17 @@ export default function ({
                                     ))}
                                 </div>
 
-                                {/* Main Image Display */}
+                                <div>
                                 <img
                                     src={selectedImage}
                                     alt="Product Image"
-                                    className="max-w-[500px] object-cover rounded-md"
+                                    className="max-w-full h-auto rounded-md p-8"
                                 />
+                                </div>
                             </>
                         )}
                     </div>
-                </div>
-                <div className="border-l-1 pl-4 w-3/4">
+                <div className="md:border-l-1 md:pl-4 md:w-3/4">
                     <div className="p-2">
                         <h3 className="text-xl font-bold">{product.name}</h3>
                     </div>

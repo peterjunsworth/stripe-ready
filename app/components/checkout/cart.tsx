@@ -74,6 +74,7 @@ const CartManager = () => {
         if (data.success) {
             window.location.href = data.session.url;
         } else {
+            let toastDisplayed = false;
             for await (const item of cart) {
                 const price = await fetch(`/api/stripe/price-management/${item?.id}`);
                 const priceData = await price.json();
@@ -81,9 +82,13 @@ const CartManager = () => {
                     const product = await fetch(`/api/stripe/product-management/${priceData?.price?.product}`);
                     const productData = await product.json();
                     showToast(`${productData?.product?.name} is no longer available. Please remove it from your cart.`, 'bg-red-500');
+                    toastDisplayed = true;
                     break;
                 }
 
+            }
+            if (!toastDisplayed) {
+                showToast(data.error, 'bg-red-500');
             }
             console.error(data.error);
         }

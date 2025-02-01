@@ -213,50 +213,52 @@ const CartItem = ({
                     {typeof item.product === 'object' && (
                         <>
                             <div className="flex items-top gap-4">
-                                <div>
-                                    <h3 className="text-base font-bold text-gray-800 mb-4">{(item.product as ProductParams)?.name}</h3>
-                                    <div className="w-48 h-[auto] shrink-0 bg-white p-2 rounded-md">
-                                        <Image
-                                            alt={(item.product as ProductParams)?.name}
-                                            src={(item.product as ProductParams)?.images?.[0] ?? ''}
-                                        />
-                                    </div>
-                                </div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-top">
-                                        <div className="flex-1 pr-8">
-                                            <p className="pr-8 ml-2 mb-8">{(item.product as ProductParams)?.description}</p>
-                                            {Object.keys((item.product as ProductParams)?.productOptions).length === 0 && (
-                                                <p className="pr-8 ml-2 mb-8 color-gray-200 text-xs">This product does not have additional variations</p>
-                                            )}
-                                            {Object.keys((item.product as ProductParams)?.productOptions).map((feature: any, index: number) => (
-                                                <Select
-                                                    key={index}
-                                                    label={feature}
-                                                    name={feature}
-                                                    value={`${feature}:${selectedVariant[setCase(feature)]}`}
-                                                    selectedKeys={[`${feature}:${selectedVariant[setCase(feature)]}`]}
-                                                    defaultSelectedKeys={[`${feature}:${selectedVariant[setCase(feature)]}`]}
-                                                    onChange={handleChange}
-                                                    variant="bordered"
-                                                    className="min-w-full mb-2"
-                                                >
-                                                    {(item.product as ProductParams)?.productOptions[feature].map((option: any, index: number) => (
-                                                        <SelectItem key={`${feature}:${option}`}>{option}</SelectItem>
-                                                    ))}
-                                                </Select>
-                                            ))}
-                                            <div className="pr-8 mt-4">
-                                                {numMatches === 0 && (
-                                                    <p className="text-red-500">No products available with the selected options</p>
+                                        <div className="md:flex md:gap-4">
+                                            <div>
+                                                <h3 className="text-base font-bold text-gray-800 mb-4">{(item.product as ProductParams)?.name}</h3>
+                                                <div className="w-48 h-[auto] shrink-0 bg-white p-2 rounded-md">
+                                                    <Image
+                                                        alt={(item.product as ProductParams)?.name}
+                                                        src={(item.product as ProductParams)?.images?.[0] ?? ''}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 pr-8 md:max-w-[50%] max-md:mt-4">
+                                                <p className="pr-8 ml-2 mb-8 truncate-text-three-lines">{(item.product as ProductParams)?.description}</p>
+                                                {Object.keys((item.product as ProductParams)?.productOptions).length === 0 && (
+                                                    <p className="pr-8 ml-2 mb-8 color-gray-200 text-xs">This product does not have additional variations</p>
                                                 )}
-                                                {numMatches > 1 && (
-                                                    <p className="text-red-500">Refine your selection. Multiple products available with the selected options</p>
-                                                )}
+                                                {Object.keys((item.product as ProductParams)?.productOptions).map((feature: any, index: number) => (
+                                                    <Select
+                                                        key={index}
+                                                        label={feature}
+                                                        name={feature}
+                                                        value={`${feature}:${selectedVariant[setCase(feature)]}`}
+                                                        selectedKeys={[`${feature}:${selectedVariant[setCase(feature)]}`]}
+                                                        defaultSelectedKeys={[`${feature}:${selectedVariant[setCase(feature)]}`]}
+                                                        onChange={handleChange}
+                                                        variant="bordered"
+                                                        className="min-w-full mb-2"
+                                                    >
+                                                        {(item.product as ProductParams)?.productOptions[feature].map((option: any, index: number) => (
+                                                            <SelectItem key={`${feature}:${option}`}>{option}</SelectItem>
+                                                        ))}
+                                                    </Select>
+                                                ))}
+                                                <div className="pr-8 mt-4">
+                                                    {numMatches === 0 && (
+                                                        <p className="text-red-500">No products available with the selected options</p>
+                                                    )}
+                                                    {numMatches > 1 && (
+                                                        <p className="text-red-500">Refine your selection. Multiple products available with the selected options</p>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                         <div>
-                                            <h4 className="text-base font-bold text-gray-800 mb-4">${((item.unit_amount ?? 0) / 100).toFixed(2)}</h4>
+                                            <h4 className="text-base font-bold text-gray-800 mb-4 text-right">${((item.unit_amount ?? 0) / 100).toFixed(2)}</h4>
                                             <button type="button"
                                                 className="flex items-center px-2.5 py-1.5 border border-gray-300 text-gray-800 text-xs outline-none bg-transparent rounded-md">
                                                 <svg 
