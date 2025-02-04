@@ -2,7 +2,7 @@
 
 import React, { use, useEffect, useState } from "react";
 import { ProductParams, PriceParams } from "@/types/interfaces";
-import { Button, Select, SelectItem } from "@nextui-org/react";
+import { Button, Card, Image, Select, SelectItem } from "@nextui-org/react";
 import { ProductImageSkeleton } from "@/app/components/elements/skeleton-product-image";
 import { useToast } from "@/app/components/elements/toast-container";
 
@@ -164,111 +164,117 @@ export default function ({
                     </Button>
                 </div>
             </div>
-            <div className="md:flex md:flex-start gap-16 mt-8">
+            <Card
+                className={`bg-gray-50 rounded-none p-4 w-full mt-8`}
+                shadow="sm"
+            >
+                <div className="md:flex md:flex-start gap-16 my-8">
 
-                    <div className="md:flex">
-                        {loading ? (
-                            <ProductImageSkeleton />
-                        ) : (
+                        <div className="md:flex md:gap-4">
+                            {loading ? (
+                                <ProductImageSkeleton />
+                            ) : (
+                                <>
+                                    {/* Thumbnails Column */}
+                                    <div className="flex flex-col space-y-4">
+                                        {product.images.map((image, index) => (
+                                            <div
+                                                className="cursor-pointer"
+                                                onClick={() => setSelectedImage(image)}
+                                                key={index}
+                                            >
+                                                <Image
+                                                    src={image}
+                                                    alt={`Product Image ${index + 1}`}
+                                                    className='max-w-[75px] object-cover rounded-md border-1'
+                                                    removeWrapper={true}
+                                                    onClick={() => setSelectedImage(image)}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div>
+                                        <Image
+                                            src={selectedImage}
+                                            alt="Product Image"
+                                            className='rounded-none h-full aspect-auto overflow-hidden border-1'
+                                            removeWrapper={true}
+                                        />
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    <div
+                        className={`w-full md:w-3/4`}
+                    >
+
+                        <p className="mb-4">{product.description || "No description available."}</p>
+
+                        {/* <div className="p-2">
+                            <h4 className="font-bold text-lg">Package Dimensions</h4>
+                            <p>
+                                Height: {product.package_dimensions.height} cm
+                                <br />
+                                Length: {product.package_dimensions.length} cm
+                                <br />
+                                Width: {product.package_dimensions.width} cm
+                                <br />
+                                Weight: {product.package_dimensions.weight} kg
+                            </p>
+                        </div> */}
+                        {product.marketing_features.length > 0 && (
                             <>
-                                {/* Thumbnails Column */}
-                                <div className="flex flex-col space-y-4">
-                                    {product.images.map((image, index) => (
-                                        <div
-                                            className="cursor-pointer"
-                                            onClick={() => setSelectedImage(image)}
-                                            key={index}
-                                        >
-                                            <img
-                                                src={image}
-                                                alt={`Product Image ${index + 1}`}
-                                                className="max-w-[75px] object-cover rounded-md"
-                                            />
-                                        </div>
+                                <h4 className="font-bold text-lg">Marketing Features</h4>
+                                <ul className="list-disc pl-6">
+                                    {product.marketing_features.map((feature, index) => (
+                                        <li key={index}>{typeof feature === 'object' ? feature.name : feature}</li>
                                     ))}
-                                </div>
+                                </ul>
+                            </>
+                        )}
 
-                                <div>
-                                <img
-                                    src={selectedImage}
-                                    alt="Product Image"
-                                    className="max-w-full h-auto rounded-md p-8"
-                                />
-                                </div>
+                        {!product.shippable && (
+                            <p>This product is not shippable.</p>
+                        )}
+
+                        {/* <div className="p-2">
+                            <h4 className="font-bold text-lg">Statement Descriptor</h4>
+                            <p>{product.statement_descriptor}</p>
+                        </div> */}
+
+                        {shouldHaveVariants && productVariants.length === 0 && (
+                            <h3 className="mt-2 text-red-500">This Product is currently not available.</h3>
+                        )}
+
+                        {productVariants.length > 0 && (
+                            <>
+                                <h3 className="mt-2">Product Options:</h3>
+                                {variantFeatures.map((feature, index) => (
+                                    <div className="p-2" key={index}>
+                                        {variantOptions[feature.name] && (
+                                            <Select
+                                                className="max-w-xs"
+                                                label={`Select ${feature.name}`}
+                                                onChange={handleChange}
+                                            >
+                                                {variantOptions[feature.name].map((option, index) => (
+                                                    <SelectItem
+                                                        key={`${feature.name}:${option}`}
+                                                        value={option}
+                                                    >
+                                                        {option}
+                                                    </SelectItem>
+                                                ))}
+                                            </Select>
+                                        )}
+                                    </div>
+                                ))}
                             </>
                         )}
                     </div>
-                <div className="md:border-l-1 md:pl-4 md:w-3/4">
-                    <div className="p-2">
-                        <h3 className="text-xl font-bold">{product.name}</h3>
-                    </div>
-
-                    <div className="p-2">
-                        <p>{product.description || "No description available."}</p>
-                    </div>
-
-                    {/* <div className="p-2">
-                        <h4 className="font-bold text-lg">Package Dimensions</h4>
-                        <p>
-                            Height: {product.package_dimensions.height} cm
-                            <br />
-                            Length: {product.package_dimensions.length} cm
-                            <br />
-                            Width: {product.package_dimensions.width} cm
-                            <br />
-                            Weight: {product.package_dimensions.weight} kg
-                        </p>
-                    </div> */}
-
-                    <div className="p-2">
-                        <h4 className="font-bold text-lg">Marketing Features</h4>
-                        <ul className="list-disc pl-6">
-                            {product.marketing_features.map((feature, index) => (
-                                <li key={index}>{typeof feature === 'object' ? feature.name : feature}</li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {!product.shippable && (
-                        <p>This product is not shippable.</p>
-                    )}
-
-                    {/* <div className="p-2">
-                        <h4 className="font-bold text-lg">Statement Descriptor</h4>
-                        <p>{product.statement_descriptor}</p>
-                    </div> */}
-
-                    {shouldHaveVariants && productVariants.length === 0 && (
-                        <h3 className="mt-2 text-red-500">This Product is currently not available.</h3>
-                    )}
-
-                    {productVariants.length > 0 && (
-                        <>
-                            <h3 className="mt-2">Product Options:</h3>
-                            {variantFeatures.map((feature, index) => (
-                                <div className="p-2" key={index}>
-                                    {variantOptions[feature.name] && (
-                                        <Select
-                                            className="max-w-xs"
-                                            label={`Select ${feature.name}`}
-                                            onChange={handleChange}
-                                        >
-                                            {variantOptions[feature.name].map((option, index) => (
-                                                <SelectItem
-                                                    key={`${feature.name}:${option}`}
-                                                    value={option}
-                                                >
-                                                    {option}
-                                                </SelectItem>
-                                            ))}
-                                        </Select>
-                                    )}
-                                </div>
-                            ))}
-                        </>
-                    )}
                 </div>
-            </div>
+            </Card>
         </>
     );
 };

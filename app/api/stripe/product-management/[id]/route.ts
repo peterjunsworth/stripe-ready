@@ -9,7 +9,6 @@ export async function getProductById(id: string) {
         const product = await stripe.products.retrieve(id, {
             expand: ['default_price'], // Expands the associated prices in the response
         });
-        console.log(product);
         return NextResponse.json({ success: true, product });
     } catch (error: any) {
         console.error('Error creating product:', error.message);

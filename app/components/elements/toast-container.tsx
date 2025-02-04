@@ -21,6 +21,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             {toast && (
                 <div className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 ${toastStyle} text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-4`}>
                     <span>{toast}</span>
+                    <button onClick={() => setToast(null)} className="bg-transparent text-white font-bold px-2">×</button>
                 </div>
             )}
         </ToastContext.Provider>
