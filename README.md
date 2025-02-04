@@ -13,7 +13,7 @@ This project is a Next.js application that integrates with Stripe for e-commerce
 - **Shopping Cart**
 - **Checkout with Stripe hosted Checkout**
 
-![Demo Image](https://github.com/yournextstore/yournextstore/blob/main/public/screenshot.jpg)
+![Demo Image](https://frontedgedigital.com/wp-content/uploads/2025/02/screenshot.jpg)
 
 ## Setup Instructions
 
