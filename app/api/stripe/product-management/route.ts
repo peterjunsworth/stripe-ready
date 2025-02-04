@@ -48,12 +48,9 @@ export async function listProducts({ id }: { id?: string }) {
                     const data = await response.json();
                     const { success, prices } = data;
                     const hasActive = prices.data.find((price: { active: boolean }) => price.active === true);
-                    if (!hasActive) {
-                        return null;
-                    }
                     return {
                         ...product,
-                        prices: success ? prices.data : [], // Add prices if successfully fetched
+                        prices: success && hasActive ? prices.data : [], // Add prices if successfully fetched
                     };
                 } catch (error) {
                     console.error('Error retrieving products or prices:', (error as Error).message);

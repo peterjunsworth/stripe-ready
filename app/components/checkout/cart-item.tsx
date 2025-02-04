@@ -221,10 +221,17 @@ const CartItem = ({
                                             <div>
                                                 <h3 className="text-base font-bold text-gray-800 mb-4">{(item.product as ProductParams)?.name}</h3>
                                                 <div className="w-48 h-[auto] shrink-0 bg-white p-2 rounded-md">
-                                                    <Image
-                                                        alt={(item.product as ProductParams)?.name}
-                                                        src={(item.product as ProductParams)?.images?.[0] ?? ''}
-                                                    />
+                                                    {(item.product as ProductParams)?.images?.length === 0 ?
+                                                        <Image
+                                                            alt='Placeholder Image'
+                                                            src={'/images/placeholder.jpg'}
+                                                        />
+                                                    :
+                                                        <Image
+                                                            alt={(item.product as ProductParams)?.name}
+                                                            src={(item.product as ProductParams)?.images?.[0] ?? ''}
+                                                        />
+                                                    }
                                                 </div>
                                             </div>
                                             <div className="flex-1 pr-8 md:max-w-[50%] max-md:mt-4">

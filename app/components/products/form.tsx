@@ -116,22 +116,23 @@ export default function ProductForm({
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const metadata = sortMetadata();
-        const productData = cleanData(formData, defaultProductData);
-        const newProduct = !productId;
-        const url = !newProduct ? `/api/stripe/product-management/${productId}` : '/api/stripe/product-management';
-        const response = await fetch(url, {
-            method: productId ? 'PUT' : 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                ...productData,
-                metadata
-            }),
-        });
-        if (response.ok) {
+        try {
+            const metadata = sortMetadata();
+            const productData = cleanData(formData, defaultProductData);
+            const newProduct = !productId;
+            const url = !newProduct ? `/api/stripe/product-management/${productId}` : '/api/stripe/product-management';
+            const response = await fetch(url, {
+                method: productId ? 'PUT' : 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...productData,
+                    metadata
+                }),
+            });
             const data = await response.json();
+            if (!data.success) throw data;
             setProductId(data?.product?.id);
             const changes = findDifferences({
                 ...productData,
@@ -142,12 +143,12 @@ export default function ProductForm({
                 setShowUpdateVariantsModal(true);
             }
             setInitialProductData(data?.product);
-        } else {
-            console.log('Error creating product');
+            showToast(newProduct
+                ? `${isVariant ? "Variant" : "Product"} Created! Now Create a Price!`
+                : `${isVariant ? "Variant" : "Product"} Updated!`);
+        } catch (error: any) {
+            showToast(error?.error || 'Issue Creating Product', 'bg-red-500');
         }
-        showToast(newProduct 
-            ?   `${isVariant ? "Variant" : "Product"} Created! Now Create a Price!`
-            :   `${isVariant ? "Variant" : "Product"} Updated!`);
     };
 
     return (

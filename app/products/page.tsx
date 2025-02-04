@@ -18,7 +18,7 @@ export default async function Page() {
     }));
 
     const parentProducts = products
-        .filter((product) => !product?.metadata?.parentProduct || product?.metadata?.parentProduct === product?.id)
+        .filter((product) => product?.prices.length && (!product?.metadata?.parentProduct || product?.metadata?.parentProduct === product?.id))
         .map((product, index) => ({
             ...product,
             index,
