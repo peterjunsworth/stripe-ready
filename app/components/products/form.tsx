@@ -220,7 +220,7 @@ export default function ProductForm({
                                 fullWidth
                                 label={isVariant ? "Variant Name" : "Product Name"}
                                 name="name"
-                                value={formData.name}
+                                value={formData.name ?? ''}
                                 onChange={handleChange}
                                 className="w-full"
                                 isRequired={true}
@@ -238,7 +238,7 @@ export default function ProductForm({
                                 fullWidth
                                 label="Statement Descriptor"
                                 name="statement_descriptor"
-                                value={formData.statement_descriptor}
+                                value={formData.statement_descriptor ?? ''}
                                 onChange={handleChange}
                                 className="w-full"
                                 maxLength={22}
@@ -271,7 +271,7 @@ export default function ProductForm({
                                     fullWidth
                                     label="Width (in inches)"
                                     name="width"
-                                    value={`${formData?.package_dimensions?.width}`}
+                                    value={`${formData?.package_dimensions?.width ?? ''}`}
                                     onChange={handlePackageDimensionsChange}
                                     className="w-full"
                                 />
@@ -280,7 +280,7 @@ export default function ProductForm({
                                     fullWidth
                                     label="Height (in inches)"
                                     name="height"
-                                    value={`${formData?.package_dimensions?.height}`}
+                                    value={`${formData?.package_dimensions?.height ?? ''}`}
                                     onChange={handlePackageDimensionsChange}
                                     className="w-full"
                                 />
@@ -289,7 +289,7 @@ export default function ProductForm({
                                     fullWidth
                                     label="Length (in inches)"
                                     name="length"
-                                    value={`${formData?.package_dimensions?.length}`}
+                                    value={`${formData?.package_dimensions?.length ?? ''}`}
                                     onChange={handlePackageDimensionsChange}
                                     className="w-full"
                                 />
@@ -298,7 +298,7 @@ export default function ProductForm({
                                     fullWidth
                                     label="Weight (in ounces)"
                                     name="weight"
-                                    value={`${formData?.package_dimensions?.weight}`}
+                                    value={`${formData?.package_dimensions?.weight ?? ''}`}
                                     onChange={handlePackageDimensionsChange}
                                     className="w-full"
                                 />

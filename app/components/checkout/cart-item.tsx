@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { CartParams, PriceParams, ProductParams } from "@/types/interfaces";
 import { Divider, Image, Input, Select, SelectItem } from "@nextui-org/react";
 import { cheapestNonRecurring } from "@/app/utils/utility-methods";
+import { CartSkeleton } from "@/app/components/elements/skeleton-cart-loader";
 import { useToast } from "@/app/components/elements/toast-container";
 
 const CartItem = ({ 
@@ -18,9 +19,9 @@ const CartItem = ({
 
     const [currentCart, setCurrentCart] = useState<CartParams[]>(cart);
     const [item, setItem] = useState<PriceParams>(price);
-    const [canRender, setCanRender] = useState<boolean>(false);
     const [selectedVariant, setSelectedVariant] = useState<{ [key: string]: any }>({});
     const [numMatches, setNumMatches] = useState<number>(1);
+    const [loading, setLoading] = useState(true);
 
     const { showToast } = useToast();
 
@@ -91,7 +92,7 @@ const CartItem = ({
             currency: expandedPrice.currency ?? '',
             product: expandedPrice.product ?? '',
         });
-        setCanRender(true);
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -162,7 +163,6 @@ const CartItem = ({
         const matches = matchingVariants(variantOptions);
         setNumMatches(matches?.length || 0);
         if (matches?.length === 1) {
-            setCanRender(false);
             getPrices(matches[0].id);
         } else {
             const updatedCart = currentCart.map((cartPrice) => {
@@ -208,7 +208,9 @@ const CartItem = ({
 
     return (
         <>
-            {canRender && (
+            {loading ?
+                <CartSkeleton />
+            :
                 <div className="items-center gap-4">
                     {typeof item.product === 'object' && (
                         <>
@@ -306,7 +308,7 @@ const CartItem = ({
                     )}
                     <Divider className="my-4" />
                 </div>
-            )}
+            }
         </>
     );
 };

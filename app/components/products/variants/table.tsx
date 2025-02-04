@@ -25,7 +25,6 @@ export default function VariantsList({
                 if (!productId || productId === '') return;
                 const response = await fetch(`/api/stripe/product-management/${productId}/variants`);
                 const data = await response.json();
-                console.log(data.products);
                 const products = data?.products ? data?.products.map((product: any, index: number) => ({
                     ...product,
                     index

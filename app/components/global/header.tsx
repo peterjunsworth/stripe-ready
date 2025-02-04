@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import CartIcon from '../icons/icon-cart';
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Image, Badge } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Image, Badge, Input } from "@nextui-org/react";
 import {
     Dropdown,
     DropdownTrigger,
@@ -13,11 +13,13 @@ import { Logo } from "@/app/components/icons/icon-logo";
 import { PriceParams } from '@/types/interfaces';
 import { useSession } from "next-auth/react";
 import { signOut } from 'next-auth/react';
+import SearchIcon from '@/app/components/icons/icon-search';
 
 export default function Header() {
     
     const [businessName, setBusinessName] = useState("");
     const [cartCount, setCartCount] = useState(0);
+    const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
 
     const { data: session } = useSession();
 
@@ -54,6 +56,18 @@ export default function Header() {
         signOut({ callbackUrl: '/sign-in' }); // You can customize the redirect URL
     };
 
+    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        if (typingTimeout) clearTimeout(typingTimeout);
+        const timeout = setTimeout(async () => {
+            const event = new CustomEvent('searchUpdated', {
+                detail: value, // Pass the query in the event detail
+            });
+            window.dispatchEvent(event);
+        }, 1000);
+        setTypingTimeout(timeout);
+    };
+
     return (
         <Navbar
             maxWidth="full"
@@ -77,8 +91,6 @@ export default function Header() {
                         Shop
                     </Link>
                 </NavbarItem>
-            </NavbarContent>
-            <NavbarContent justify="end">
                 {session && (
                     <NavbarItem>
                         <Dropdown>
@@ -103,6 +115,24 @@ export default function Header() {
                         </Dropdown>
                     </NavbarItem>
                 )}
+            </NavbarContent>
+            <NavbarContent justify="end">
+                <NavbarItem>
+                    <Input
+                        classNames={{
+                            base: "max-w-full sm:max-w-[10rem] h-10",
+                            mainWrapper: "h-full",
+                            input: "text-small",
+                            inputWrapper:
+                                "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+                        }}
+                        placeholder="Type to search..."
+                        size="sm"
+                        startContent={<SearchIcon size={18} />}
+                        type="search"
+                        onChange={handleSearch}
+                    />
+                </NavbarItem>
                 <NavbarItem>
                     <Badge color="primary" content={cartCount}>
                         <Button

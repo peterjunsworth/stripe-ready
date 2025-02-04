@@ -68,37 +68,35 @@ export async function listProducts({ id }: { id?: string }) {
     }
 }
 
-
 // POST request to create PaymentIntent
 export async function GET(req: NextRequest) {
     try {
-        // Parse the query parameter from the request URL
         const url = new URL(req.url);
         const query = url.searchParams.get('query');
-
+        const isSearch = url.searchParams.get('isSearch');
+        if (query) {
+            const stripeProducts = await stripe.products.search({
+                limit: 100,
+                query: `name~'${query}' OR description~'${query}'`
+            });
+            if (isSearch) {
+                return Response.json({ success: true, products: stripeProducts.data.filter((product) => product.active)});
+            }
+            if (!isSearch) {
+                const products = stripeProducts.data
+                    .filter((product) => product.active && !product.metadata?.parentProduct)
+                    .map((product) => ({
+                        id: product.id,
+                        name: product.name,
+                    }));
+                return Response.json({ products });
+            }
+        } 
         if (!query) {
-            return Response.json({ success: false, error: 'Query parameter is required' }, { status: 400 });
+            const stripeProducts = await stripe.products.list({limit: 100});
+            return Response.json({ success: true, products: stripeProducts.data
+                .filter((product) => product.active && !product.metadata?.parentProduct)});
         }
-        const searchQuery = `name~'${query}' OR description~'${query}'`;
-        //const searchQuery = `name~\'${query}\' OR description~\'${query}\'`;
-
-        // Use the Stripe products search method
-        const stripeProducts = await stripe.products.search({
-            query: searchQuery,
-            limit: 100,  // Adjust the number of results as needed
-        });
-        console.log(stripeProducts);
-
-        // Map the Stripe product data to a simpler format
-        const products = stripeProducts.data
-            .filter((product) => product.active && !product.metadata?.parentProduct)
-            .map((product) => ({
-                id: product.id,
-                name: product.name,
-            }));
-
-        // Return the products as a JSON response
-        return Response.json({ products });
     } catch (error: any) {
         console.error('Error fetching products from Stripe:', error);
         return Response.json({ success: false, error: error.message }, { status: 500 });
