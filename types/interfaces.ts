@@ -110,6 +110,33 @@ export interface ShippingRate {
     metadata: { minValue: string; maxValue: string };
 }
 
+export interface TaxRegistration {
+    id?: string;
+    active_from?: number | null;
+    country: string;
+    country_options: Record<string, { state: string; type: string }>;
+    expires_at: number | null;
+    livemode: boolean;
+    status: string;
+}
+
+export interface TaxRates {
+    id?: string;
+    country: string;
+    description: string;
+    display_name: string;
+    flat_amount: number |null,
+    inclusive: boolean,
+    jurisdiction: string | null,
+    jurisdiction_level: string | null,
+    livemode: boolean,
+    metadata: Record<string, any>,
+    percentage: number,
+    rate_type: string;
+    state: string;
+    tax_type: string | null;
+}
+
 export const defaultProductData: ProductFormData = {
     name: '',
     active: true,

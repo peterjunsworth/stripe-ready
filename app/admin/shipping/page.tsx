@@ -13,7 +13,6 @@ export default async function ShippingAdminPage() {
     
     return (
         <div>
-            <h1 className='mb-8'>Create Shipping Rates</h1>
             <ShippingForm shippingRatesData={shippingRates as unknown as ShippingRate[]} />
         </div>
     );

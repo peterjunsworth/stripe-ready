@@ -105,6 +105,7 @@ export default function ShippingForm({
 
     return (
         <div>
+            <h2 className='text-lg font-semibold mb-4'>Create Shipping Rates</h2>
             <form onSubmit={handleSubmit} className="space-y-4 mb-4">
                 <Input
                     isClearable
@@ -144,7 +145,7 @@ export default function ShippingForm({
                 {error && <p className="text-red-500">{error}</p>}
             </form>
 
-            <h2 className="text-lg font-semibold">Current Shipping Rates</h2>
+            <h2 className="text-lg font-semibold mt-8 mb-4">Current Shipping Rates</h2>
             <Table aria-label="Shipping Rates Table">
                 <TableHeader>
                     <TableColumn>Display Name</TableColumn>
@@ -180,7 +181,7 @@ export default function ShippingForm({
                                     onClick={() => handleDeleteRate(String(rate.id))}
                                     color="danger"
                                     size="sm"
-                                    className='ml-2'
+                                    className='md:ml-2 max-sm:mt-2'
                                 >
                                     Delete
                                 </Button>
