@@ -1,6 +1,6 @@
 import { getTaxRegistrations } from '@/app/api/stripe/tax-management/tax-registration/route';
 import { getTaxRates } from '@/app/api/stripe/tax-management/tax-rates/route';
-import TaxRegistrationForm from '@/app/components/tax/form';
+import TaxManager from '@/app/components/tax/manager';
 import { TaxRates, TaxRegistration } from '@/types/interfaces';
 
 export default async function TaxRegistrationsPage() {
@@ -11,7 +11,7 @@ export default async function TaxRegistrationsPage() {
 
     return (
         <div>
-            <TaxRegistrationForm
+            <TaxManager
                 taxRatesData={taxRates as unknown as TaxRates[]}
                 taxRegistrationsData={taxRegistrations as unknown as TaxRegistration[]}
             />
