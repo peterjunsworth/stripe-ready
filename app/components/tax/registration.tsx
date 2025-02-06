@@ -66,7 +66,6 @@ export default function TaxRegistrationForm({
                 showToast('State Required', 'bg-red-500');
                 return;
             }
-            console.log(activeDate);
             const activeFrom = !activeDate?.year || !activeDate?.month || !activeDate?.day ? 
                 (new Date(new Date()).getTime() + (10000)) / 1000 : new Date(activeDate.year, activeDate.month - 1, activeDate.day).getTime() / 1000;
             if (!expiryDate?.year || !expiryDate?.month || !expiryDate?.day) {
