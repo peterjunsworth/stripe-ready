@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Button,
     DateInput,
@@ -27,10 +27,12 @@ export default function TaxRegistrationForm({
     allTaxRegistrations,
     setAllTaxRegistrations,
     nonRegisteredStates,
+    uSStates,
 }: {
     allTaxRegistrations: TaxRegistration[],
     setAllTaxRegistrations: Function,
     nonRegisteredStates: any[],
+    uSStates: any[]
 }) {
     const taxRegistrationObject = {
         active_from: null,
@@ -47,6 +49,7 @@ export default function TaxRegistrationForm({
     const [jurisdiction, setJurisdiction] = useState<string>('');
     const [activeDate, setActiveDate] = useState<CalendarDate | null>(null);
     const [expiryDate, setExpiryDate] = useState<CalendarDate | null>(null);
+    const [filteredStates, setFilteredStates] = useState<any[]>(nonRegisteredStates);
 
     const { showToast } = useToast();
 
@@ -63,12 +66,14 @@ export default function TaxRegistrationForm({
                 showToast('State Required', 'bg-red-500');
                 return;
             }
+            console.log(activeDate);
             const activeFrom = !activeDate?.year || !activeDate?.month || !activeDate?.day ? 
-                (new Date(new Date()).getTime() + (5000)) / 1000 : new Date(activeDate.year, activeDate.month - 1, activeDate.day).getTime() / 1000;
+                (new Date(new Date()).getTime() + (10000)) / 1000 : new Date(activeDate.year, activeDate.month - 1, activeDate.day).getTime() / 1000;
             if (!expiryDate?.year || !expiryDate?.month || !expiryDate?.day) {
                 showToast('Expiry Date Required', 'bg-red-500');
                 return;
             }
+            const expiryDateTimestamp = new Date(expiryDate.year, expiryDate.month - 1, expiryDate.day).getTime() / 1000;
             const country_options = type === 'local_amusement_tax' || type === 'local_tax' ? {
                 [taxReg.country.toLowerCase()]: {
                     state,
@@ -88,12 +93,16 @@ export default function TaxRegistrationForm({
             const response = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+                body: JSON.stringify(!taxReg.id ? {
                     taxRegistration: {
                         active_from: activeFrom,
                         country: taxReg.country,
                         country_options,
-                        expires_at: new Date(expiryDate.year, expiryDate.month - 1, expiryDate.day).getTime() / 1000
+                        expires_at: expiryDateTimestamp
+                    }
+                } : {
+                    taxRegistration: {
+                        expires_at: expiryDateTimestamp
                     }
                 })
             });
@@ -111,6 +120,7 @@ export default function TaxRegistrationForm({
             if (!taxReg.id) setAllTaxRegistrations((prev: TaxRegistration[]) => [...prev, newTaxRegistration.taxRegistration]);
             showToast('Tax Registration Saved!');
             resetTaxRegistration();
+            setFilteredStates(nonRegisteredStates);
         } catch (error: any) {
             const message = typeof error === 'string' 
                 ? error 
@@ -121,24 +131,38 @@ export default function TaxRegistrationForm({
         }
     };
 
+    const formatUnixTimestamp = (timestamp: number) => {
+        const date = new Date(timestamp * 1000);
+        const calendarDate = new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
+        return calendarDate;
+    };
+
     const handleEditTaxRegistration = (id: string) => {
+        setFilteredStates(uSStates)
         const taxRegistration = allTaxRegistrations.find((reg) => String(reg.id) === String(id));
         const countryOptions = taxRegistration?.country_options[taxRegistration?.country.toLowerCase()];
         setTaxReg(taxRegistration as TaxRegistration);
         setState(countryOptions?.state ?? '');
         setType(countryOptions?.type ?? '');
-        setJurisdiction((countryOptions as { [key: string]: any })[type].jurisdiction ?? {});
-        setActiveDate(parseDate(new Date(taxReg?.active_from ?? 0).toISOString().split('T')[0]));
-        setExpiryDate(parseDate(new Date(taxReg?.expires_at ?? 0).toISOString().split('T')[0]));
+        if ((countryOptions as { [key: string]: any })[type]){
+            setJurisdiction((countryOptions as { [key: string]: any })[type].jurisdiction ?? {});
+        }
+        setActiveDate(formatUnixTimestamp(taxRegistration?.active_from ?? 0));
+        setExpiryDate(formatUnixTimestamp(taxRegistration?.expires_at ?? 0));
     };
 
-    const handleDeleteTaxRegistration = (id: string) => {
+    const handleExpireTaxRegistration = (id: string) => {
         try {
             fetch(`/api/stripe/tax-management/tax-registration/${id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
             });
-            setAllTaxRegistrations((prev: TaxRegistration[]) => prev.filter((reg) => reg.id !== id));
+            setAllTaxRegistrations((prev: TaxRegistration[]) => prev.map((reg) => {
+                if (reg.id === id) {
+                    return { ...reg, status: 'expired' };
+                }
+                return reg;
+            }));
             showToast('Tax Registration Deleted!');
         } catch (error: any) {
             showToast('Failed to delete tax registration', 'bg-red-500');
@@ -150,16 +174,19 @@ export default function TaxRegistrationForm({
             <h2 className="mb-8 font-bold">Tax Registrations</h2>
             <form onSubmit={handleTaxRegistrationSubmit} className="space-y-4 mb-4">
                 <Select
+                    key={`available-states-${state}`}
                     label="State"
                     name="state"
                     value={state ?? ''}
                     defaultSelectedKeys={[state ?? '']}
+                    selectedKeys={[state ?? '']}
                     placeholder="Select an State"
                     className="w-full"
                     onChange={(e) => setState(e.target.value)}
                     required
+                    isDisabled={Boolean(taxReg?.id)}
                 >
-                    {nonRegisteredStates.map((state, index) => (
+                    {filteredStates.map((state, index) => (
                         <SelectItem
                             key={`${state.abbreviation}`}
                             value={state.name}
@@ -174,8 +201,10 @@ export default function TaxRegistrationForm({
                     value={type ?? ''}
                     placeholder="Select an Option"
                     defaultSelectedKeys={[type ?? '']}
+                    selectedKeys={[type ?? '']}
                     onChange={(e) => setType(e.target.value)}
                     className="w-full"
+                    isDisabled={Boolean(taxReg?.id)}
                 >
                     <SelectItem key="local_amusement_tax">Local Amusement Tax</SelectItem>
                     <SelectItem key="local_lease_tax">Local Lease Tax</SelectItem>
@@ -188,17 +217,19 @@ export default function TaxRegistrationForm({
                     type="text"
                     value={jurisdiction ?? ''}
                     onChange={(e) => setJurisdiction(e.target.value)}
+                    isDisabled={Boolean(taxReg?.id)}
                 />
                 <DateInput
                     isRequired
-                    defaultValue={taxReg?.active_from ? parseDate(new Date(taxReg?.active_from).toISOString().split('T')[0]) : parseDate(new Date().toISOString().split('T')[0])}
+                    value={taxReg?.active_from ? formatUnixTimestamp(taxReg?.active_from) : null}
                     label="Registration Active From Date"
                     placeholderValue={new CalendarDate(1995, 11, 6)}
                     onChange={(date) => setActiveDate(date)}
+                    isDisabled={Boolean(taxReg?.id)}
                 />
                 <DateInput
                     isRequired
-                    defaultValue={taxReg?.expires_at ? parseDate(new Date(taxReg?.expires_at).toISOString().split('T')[0]) : null}
+                    value={taxReg?.expires_at ? formatUnixTimestamp(taxReg?.expires_at) : null}
                     label="Registration Expiry Date"
                     placeholderValue={new CalendarDate(1995, 11, 6)}
                     onChange={setExpiryDate}
@@ -210,6 +241,7 @@ export default function TaxRegistrationForm({
                 <TableHeader>
                     <TableColumn>Country</TableColumn>
                     <TableColumn>State</TableColumn>
+                    <TableColumn>Status</TableColumn>
                     <TableColumn className='text-right'>Actions</TableColumn>
                 </TableHeader>
                 <TableBody>
@@ -217,6 +249,14 @@ export default function TaxRegistrationForm({
                         <TableRow key={index}>
                             <TableCell>{registration.country}</TableCell>
                             <TableCell>{registration?.country_options?.[registration.country?.toLocaleLowerCase()]?.state || 'Default State'}</TableCell>
+                            <TableCell className={`capitalize ${registration?.status === 'expired' 
+                                ? 'text-red-500' 
+                                : registration?.status === 'scheduled' 
+                                    ? 'text-yellow-500' 
+                                    : 'text-green-500'}`}
+                            >
+                                {registration?.status}
+                            </TableCell>
                             <TableCell className="flex justify-end">
                                 <Dropdown>
                                     <DropdownTrigger>
@@ -226,7 +266,7 @@ export default function TaxRegistrationForm({
                                     </DropdownTrigger>
                                     <DropdownMenu>
                                         <DropdownItem onClick={() => registration?.id && handleEditTaxRegistration(registration.id)}>Edit</DropdownItem>
-                                        <DropdownItem onClick={() => registration?.id && handleDeleteTaxRegistration(registration.id)}>Delete</DropdownItem>
+                                        <DropdownItem onClick={() => registration?.id && handleExpireTaxRegistration(registration.id)}>Expire</DropdownItem>
                                     </DropdownMenu>
                                 </Dropdown>
                             </TableCell>

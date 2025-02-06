@@ -44,7 +44,8 @@ export default function TaxRateForm({
         percentage: 7,
         rate_type: "percentage",
         state: "",
-        tax_type: null
+        tax_type: null,
+        active: true
     };
 
     const [taxRate, setTaxRate] = useState<TaxRates>(taxRateObject);
@@ -182,6 +183,7 @@ export default function TaxRateForm({
                     <TableColumn>Country</TableColumn>
                     <TableColumn>State</TableColumn>
                     <TableColumn>Percentage</TableColumn>
+                    <TableColumn>Status</TableColumn>
                     <TableColumn className='text-right'>Actions</TableColumn>
                 </TableHeader>
                 <TableBody>
@@ -191,6 +193,7 @@ export default function TaxRateForm({
                             <TableCell>{rate.country}</TableCell>
                             <TableCell>{rate.state}</TableCell>
                             <TableCell>{rate.percentage}%</TableCell>
+                            <TableCell className={`capitalize ${rate.active ? 'text-green-500' : 'text-red-500'}`}>{rate.active ? 'Active' : 'InActive'}</TableCell>
                             <TableCell className="flex justify-end">
                                 <Dropdown>
                                     <DropdownTrigger>

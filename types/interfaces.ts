@@ -135,6 +135,7 @@ export interface TaxRates {
     rate_type: string;
     state: string;
     tax_type: string | null;
+    active: boolean;
 }
 
 export const defaultProductData: ProductFormData = {

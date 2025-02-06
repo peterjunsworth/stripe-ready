@@ -26,10 +26,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
             return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
         }
         const { id } = await params;
-        const taxData = await req.json();
-        const response = await updateTaxRate(id, taxData);
-        const taxRate = response instanceof Response ? await response.json() : response;
-        return NextResponse.json({ success: true, taxRate: taxRate?.taxRate });
+        const { taxRate } = await req.json();
+        const response = await updateTaxRate(id, taxRate);
+        const taxData = response instanceof Response ? await response.json() : response;
+        return NextResponse.json({ success: true, taxRate: taxData?.taxRate });
     } catch (error: any) {
         console.error('Error updating tax rate in Stripe:', error);
         return Response.json({ success: false, error: error.message }, { status: 500 });
