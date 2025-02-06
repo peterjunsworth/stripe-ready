@@ -60,7 +60,6 @@ export default function TaxRegistrationForm({
 
     const handleTaxRegistrationSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setTaxReg((prev) => ({ ...prev, isLoading: true, error: '' }));
         try {
             if(!state) {
                 showToast('State Required', 'bg-red-500');
