@@ -108,6 +108,11 @@ export default function Header() {
                                         Manage Shipping Rates
                                     </Link>
                                 </DropdownItem>
+                                <DropdownItem>
+                                    <Link color="foreground" href="/admin/tax">
+                                        Manage Tax Rates
+                                    </Link>
+                                </DropdownItem>
                                 <DropdownItem className='p-0 mt-2'>
                                     <Button className="w-full" color="danger" onClick={handleSignOut}>Sign Out</Button>
                                 </DropdownItem>
